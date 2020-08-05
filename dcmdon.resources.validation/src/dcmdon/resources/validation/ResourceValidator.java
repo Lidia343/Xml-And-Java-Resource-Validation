@@ -259,10 +259,10 @@ public class ResourceValidator
 			if (!a_interfaceConstantValues.contains(value))
 			{
 				errorsExist = true;
-				writeMessageIntoReport(m_error, "Параметр " + par.getName() +
-									   " = " + value + " тега " + par.getType() +
-									   " не найден в константах соответствующих" +
-									   " интерфейсов");
+				writeMessageIntoReport(m_error, "Параметр " + value + " атрибута "
+									   + par.getName() +" тега " + par.getType() +
+									   " не найден в константах соответствующих " +
+									   "интерфейсов");
 			}
 		}
 		return errorsExist;

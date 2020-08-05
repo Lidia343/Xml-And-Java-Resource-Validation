@@ -1,0 +1,42 @@
+{
+	"xmlDir": "C:\\Users\\Black\\dcmdon.resources.validation\\xml",
+	"interfaces":
+	[
+		{
+			"type": "Resource",
+			"path": "C:\\Users\\Black\\Desktop\\constant-test\\IResources1.java",
+			"allowedEqualConstants": []
+		},
+		{
+			"type": "Resource",
+			"path": "C:\\Users\\Black\\Desktop\\constant-test\\IResources2.java",
+			"allowedEqualConstants":
+			[
+				{
+					"names": ["RES_ID_WORKBENCH_STATE", "RES_ID_NET"],
+					"value": 5001
+				},
+				{
+					"names": ["ALL", "RES_ID_NET"],
+					"value": 5
+				}
+			]
+		},
+		{
+			"type": "Property",
+			"path": "C:\\Users\\Black\\Desktop\\constant-test\\IProperties1.java",
+			"allowedEqualConstants":
+			[
+				{
+					"names": ["PROP_ID_CODE", "PROP_ID_NUM"],
+					"value": 102
+				}
+			]
+		},
+		{
+			"type": "Property",
+			"path": "C:\\Users\\Black\\Desktop\\constant-test\\IProperties2.java",
+			"allowedEqualConstants": []
+		}
+	]
+}

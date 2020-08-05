@@ -16,7 +16,7 @@ public class Application implements IApplication
 	public Object start(IApplicationContext a_context) throws Exception
 	{
 		ResourceValidator validator = new ResourceValidator(m_configFilePath);
-		System.out.println(validator.validateAndGetReport());
+		System.out.print(validator.validateAndGetReport());
 		return Integer.valueOf(validator.getValidationResultCode());
 	}
 

@@ -15,7 +15,7 @@
       </application>
    </extension>
    <extension
-         id="ResourceValidationProduct"
+         id="ResourceValidationProducts"
          name="Resource Validation Products"
          point="org.eclipse.core.runtime.products">
       <product

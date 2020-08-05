@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Resource Validation Product" uid="Resource Validation Product" id="dcmdon.resources.validation.ResourceValidationProduct" application="dcmdon.resources.validation.applications" useFeatures="false" includeLaunchers="true">
+<product name="Resource Validation Product" uid="Resource Validation Product" id="dcmdon.resources.validation.ResourceValidationProducts" application="dcmdon.resources.validation.applications" useFeatures="false" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>

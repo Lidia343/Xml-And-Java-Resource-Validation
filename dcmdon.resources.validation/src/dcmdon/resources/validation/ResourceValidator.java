@@ -27,7 +27,6 @@ import dcmdon.resources.validation.model.file.java.Interface;
 import dcmdon.resources.validation.model.file.java.InterfaceConstantRecognizer;
 import dcmdon.resources.validation.model.file.xml.IdParameterRecognizer;
 
-@SuppressWarnings("restriction")
 public class ResourceValidator
 {
 	public static final short OK_RESULT_CODE = 0;
@@ -39,14 +38,14 @@ public class ResourceValidator
 	
 	private String m_configFilePath;
 	
+	private Configuration m_configuration;
+	
 	private StringBuilder m_reportBuilder = new StringBuilder();
 	
 	private int m_resultCode = 0;
 	
 	private List<Short> m_allResourceInterfaceConstantValues = new ArrayList<>();
 	private List<Short>  m_allPropertyInterfaceConstantValues = new ArrayList<>();
-	
-	private String m_XmlDirForValidation;
 	
 	public ResourceValidator (String a_configFilePath)
 	{
@@ -55,6 +54,7 @@ public class ResourceValidator
 	
 	private void validateAllResources () throws UnsupportedEncodingException, FileNotFoundException, IOException, ParserConfigurationException, SAXException
 	{
+		m_configuration = readConfiguration();
 		validateInterfaces();
 		validateXmlFiles();
 	}
@@ -65,7 +65,7 @@ public class ResourceValidator
 		Interface[] interfaces = getInterfacesForValidation();
 		for (Interface i : interfaces)
 		{
-			if (!isInterfaceExists(i.getPath())) continue;
+			if (!isFileExists(i.getPath())) continue;
 			validateInterfaceConstants (interfaceConstRecognizer, i);
 		}
 	}
@@ -132,12 +132,9 @@ public class ResourceValidator
 
 	private Interface[] getInterfacesForValidation () throws IOException
 	{
-		Configuration configuration = readConfiguration();
-		
-		m_XmlDirForValidation = configuration.getXmlDir();
 		writeMessageIntoReport(m_info, "Проверка интерфейсов...");
 		
-		return configuration.getInterfaces();
+		return m_configuration.getInterfaces();
 	}
 	
 	private Configuration readConfiguration () throws IOException
@@ -157,13 +154,13 @@ public class ResourceValidator
 		}
 	}
 	
-	private boolean isInterfaceExists (String a_interfacePath)
+	private boolean isFileExists (String a_filePath)
 	{
-		writeMessageIntoReport(m_info, a_interfacePath + ":");
-		File javaFile = new File(a_interfacePath);
+		writeMessageIntoReport(m_info, a_filePath + ":");
+		File javaFile = new File(a_filePath);
 		if (!javaFile.exists())
 		{
-			writeMessageIntoReport(m_error, "Интерфейс не найден.");
+			writeMessageIntoReport(m_error, "Файл не найден.");
 			return false;
 		}
 		return true;
@@ -186,66 +183,22 @@ public class ResourceValidator
 	
 	private void validateXmlFiles () throws ParserConfigurationException, SAXException, IOException
 	{
-		writeMessageIntoReport(m_info, "Директория, содержащая xml-файлы для проверки:");
-		
-		File xmlDir = new File(m_XmlDirForValidation);
-		if (!xmlDir.exists())
-		{
-			writeMessageIntoReport(m_error, "Директория " + m_XmlDirForValidation +
-					 						" не найдена.");
-			return;
-		}
-		
-		writeMessageIntoReport(m_info, m_XmlDirForValidation);
 		writeMessageIntoReport(m_info, "Проверка xml-файлов...");
 		
-		IdParameterRecognizer tagRecognizer = new IdParameterRecognizer();//Переименовать
+		IdParameterRecognizer tagRecognizer = new IdParameterRecognizer();
 		
-		List<File> xmlFiles = getXmlFiles(xmlDir);
-		for (File f : xmlFiles)
+		String[] xmlFilePaths = m_configuration.getXmlFilePaths();
+		for (String path : xmlFilePaths)
 		{
-			String filePath = f.getAbsolutePath();
-			writeMessageIntoReport(m_info, filePath + ":");
+			if (!isFileExists(path)) continue;
 			
-			List<Constant> resourcePars = tagRecognizer.getConstants(Constant.RESOURCE_TYPE, filePath);
-			List<Constant> propertyPars = tagRecognizer.getConstants(Constant.PROPERTY_TYPE, filePath);
+			List<Constant> resourcePars = tagRecognizer.getConstants(Constant.RESOURCE_TYPE, path);
+			List<Constant> propertyPars = tagRecognizer.getConstants(Constant.PROPERTY_TYPE, path);
 			
 			boolean errorsExist = checkXmlParameters(resourcePars, m_allResourceInterfaceConstantValues);
 			errorsExist = checkXmlParameters(propertyPars, m_allPropertyInterfaceConstantValues);
 			
 			if (!errorsExist) writeMessageIntoReport(m_info, m_noErrMessage);
-		}
-	}
-	
-	private List<File> getXmlFiles (File a_parent)
-	{
-		List<File> files = new ArrayList<>();
-		
-		if (!a_parent.isDirectory())
-		{
-			addXmlFileToList(a_parent, files);
-			return files;
-		}
-		
-		for (File f : a_parent.listFiles())
-		{
-			if (f.isDirectory())
-			{
-				files.addAll(getXmlFiles(f));
-			}
-			else
-			{
-				addXmlFileToList(f, files);
-			}
-		}
-		return files;
-	}
-	
-	private void addXmlFileToList (File a_file, List<File> a_list)
-	{
-		if (a_file.getName().endsWith(".xml"))
-		{
-			a_list.add(a_file);
 		}
 	}
 	

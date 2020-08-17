@@ -4,12 +4,12 @@ import dcmdon.resources.validation.model.file.java.Interface;
 
 public class Configuration
 {
-	private String xmlDir;
+	private String[] xmlFilePaths;
 	private Interface[] interfaces;
 	
-	public String getXmlDir ()
+	public String[] getXmlFilePaths ()
 	{
-		return xmlDir;
+		return xmlFilePaths;
 	}
 	
 	public Interface[] getInterfaces ()

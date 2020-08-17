@@ -32,8 +32,9 @@ public class ResourceValidator
 	public static final int OK_RESULT_CODE = 0;
 	public static final int ERROR_RESULT_CODE = 1;
 	
-	private final String m_info = "[INFO]\t";
-	private final String m_error = "[ERR!]\t";
+	public static final String INFO = "[INFO]\t";
+	public static final String ERROR = "[ERR!]\t";
+	
 	private final String m_noErrMessage = "Ошибки не обнаружены.";
 	
 	private String m_configFilePath;
@@ -127,12 +128,12 @@ public class ResourceValidator
 				}
 			}
 		}
-		if (!errorsExist) writeMessageIntoReport(m_info, m_noErrMessage);
+		if (!errorsExist) writeMessageIntoReport(INFO, m_noErrMessage);
 	}
 
 	private Interface[] getInterfacesForValidation () throws IOException
 	{
-		writeMessageIntoReport(m_info, "Проверка интерфейсов...");
+		writeMessageIntoReport(INFO, "Проверка интерфейсов...");
 		
 		return m_configuration.getInterfaces();
 	}
@@ -156,11 +157,11 @@ public class ResourceValidator
 	
 	private boolean isFileExists (String a_filePath)
 	{
-		writeMessageIntoReport(m_info, a_filePath + ":");
+		writeMessageIntoReport(INFO, a_filePath + ":");
 		File javaFile = new File(a_filePath);
 		if (!javaFile.exists())
 		{
-			writeMessageIntoReport(m_error, "Файл не найден.");
+			writeMessageIntoReport(ERROR, "Файл не найден.");
 			return false;
 		}
 		return true;
@@ -168,7 +169,7 @@ public class ResourceValidator
 	
 	private void writeMessageIntoReport (String a_prefix, String a_message)
 	{
-		if (a_prefix.equals(m_error)) m_resultCode = ERROR_RESULT_CODE;
+		if (a_prefix.equals(ERROR)) m_resultCode = ERROR_RESULT_CODE;
 		m_reportBuilder.append(a_prefix + a_message + System.lineSeparator());
 	}
 	
@@ -176,14 +177,14 @@ public class ResourceValidator
 											short a_errorConstValue,
 											String a_equalConstName)
 	{
-		writeMessageIntoReport(m_error, "Значение " + a_errorConstValue +
+		writeMessageIntoReport(ERROR, "Значение " + a_errorConstValue +
 							   " константы " + a_errorConstName +
 		        			   " равно значению константы " + a_equalConstName);
 	}
 	
 	private void validateXmlFiles () throws ParserConfigurationException, SAXException, IOException
 	{
-		writeMessageIntoReport(m_info, "Проверка xml-файлов...");
+		writeMessageIntoReport(INFO, "Проверка xml-файлов...");
 		
 		IdParameterRecognizer tagRecognizer = new IdParameterRecognizer();
 		
@@ -198,7 +199,7 @@ public class ResourceValidator
 			boolean errorsExist = checkXmlParameters(resourcePars, m_allResourceInterfaceConstantValues);
 			errorsExist = checkXmlParameters(propertyPars, m_allPropertyInterfaceConstantValues);
 			
-			if (!errorsExist) writeMessageIntoReport(m_info, m_noErrMessage);
+			if (!errorsExist) writeMessageIntoReport(INFO, m_noErrMessage);
 		}
 	}
 	
@@ -212,7 +213,7 @@ public class ResourceValidator
 			if (!a_interfaceConstantValues.contains(value))
 			{
 				errorsExist = true;
-				writeMessageIntoReport(m_error, "Параметр " + value + " атрибута "
+				writeMessageIntoReport(ERROR, "Параметр " + value + " атрибута "
 									   + par.getName() +" тега " + par.getType() +
 									   " не найден в константах соответствующих " +
 									   "интерфейсов");

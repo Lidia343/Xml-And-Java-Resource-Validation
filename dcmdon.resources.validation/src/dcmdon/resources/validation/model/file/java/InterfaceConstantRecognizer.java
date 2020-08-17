@@ -22,7 +22,7 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 			scanner.useDelimiter("[\\p{javaWhitespace}]*=[\\p{javaWhitespace}]*|[\\p{javaWhitespace}]+|;");
 			while (scanner.hasNext())
 			{
-				if (scanner.next().equals(Constant.INTERFACE_CONSTANT_TYPE))
+				if (scanner.next().equals(Constant.TYPE))
 				{
 					String name = scanner.next();
 					short value = Short.parseShort(scanner.next()); //Добавить проверку на выражение

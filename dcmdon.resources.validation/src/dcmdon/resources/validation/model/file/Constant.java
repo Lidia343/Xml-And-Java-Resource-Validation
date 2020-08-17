@@ -2,12 +2,9 @@ package dcmdon.resources.validation.model.file;
 
 public class Constant
 {
-	public static final String RESOURCE_TYPE = "Resource";
-	public static final String PROPERTY_TYPE = "Property";
+	public static final String NAME_ID = "Id";
 	
-	public static final String ID_NAME = "Id";
-	
-	public static final String INTERFACE_CONSTANT_TYPE = "short";
+	public static final String TYPE = "short";
 	
 	private String m_type;
 	private String m_name;

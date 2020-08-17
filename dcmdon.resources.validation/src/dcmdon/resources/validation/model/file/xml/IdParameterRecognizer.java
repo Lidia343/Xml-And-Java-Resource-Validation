@@ -37,7 +37,7 @@ public class IdParameterRecognizer implements IConstantRecognizer
 		for (int i = 0; i < nodes.getLength(); i++)
 		{
 			Node node = nodes.item(i);
-			String name = Constant.ID_NAME;
+			String name = Constant.NAME_ID;
 			Constant parameter = new Constant(a_constantType, name, Short.parseShort(node.
 											  getAttributes().getNamedItem(name).
 											  getNodeValue()));

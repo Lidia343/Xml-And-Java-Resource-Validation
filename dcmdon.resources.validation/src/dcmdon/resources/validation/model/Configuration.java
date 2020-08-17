@@ -1,18 +1,18 @@
 package dcmdon.resources.validation.model;
 
-import dcmdon.resources.validation.model.file.java.Interface;
+import dcmdon.resources.validation.model.file.java.Interfaces;
 
 public class Configuration
 {
 	private String[] xmlFilePaths;
-	private Interface[] interfaces;
+	private Interfaces[] interfaces;
 	
 	public String[] getXmlFilePaths ()
 	{
 		return xmlFilePaths;
 	}
 	
-	public Interface[] getInterfaces ()
+	public Interfaces[] getInterfaces ()
 	{
 		return interfaces;
 	}

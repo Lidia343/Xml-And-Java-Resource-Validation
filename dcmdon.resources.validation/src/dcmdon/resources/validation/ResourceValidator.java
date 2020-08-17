@@ -23,7 +23,7 @@ import com.google.gson.GsonBuilder;
 
 import dcmdon.resources.validation.model.Configuration;
 import dcmdon.resources.validation.model.file.Constant;
-import dcmdon.resources.validation.model.file.java.Interface;
+import dcmdon.resources.validation.model.file.java.Interfaces;
 import dcmdon.resources.validation.model.file.java.InterfaceConstantRecognizer;
 import dcmdon.resources.validation.model.file.xml.IdParameterRecognizer;
 
@@ -63,78 +63,83 @@ public class ResourceValidator
 	private void validateInterfaces () throws NumberFormatException, NoSuchElementException, IOException
 	{
 		InterfaceConstantRecognizer interfaceConstRecognizer = new InterfaceConstantRecognizer();
-		Interface[] interfaces = getInterfacesForValidation();
-		for (Interface i : interfaces)
+		Interfaces[] interfaces = getInterfacesForValidation();
+		for (Interfaces i : interfaces)
 		{
-			if (!isFileExists(i.getPath())) continue;
 			validateInterfaceConstants (interfaceConstRecognizer, i);
 		}
 	}
 	
 	private void validateInterfaceConstants (InterfaceConstantRecognizer a_interfaceConstRecognizer,
-											 Interface a_interface) throws NumberFormatException,
+											 Interfaces a_interfaces) throws NumberFormatException,
 																           FileNotFoundException, 
 																           NoSuchElementException
 	{
-		Map<Short, List<String>> allowedEqualConsts = a_interface.getAllowedEqualConstNamesByValue();
+		Map<Short, List<String>> allowedEqualConsts = a_interfaces.getAllowedEqualConstNamesByValue();
 		
 		Map<String, Short> interfaceConstValueByName = new HashMap<>();
 		
-		String interfaceType = a_interface.getType();
-		List<Constant> interfaceConstants = a_interfaceConstRecognizer.getConstants(interfaceType, a_interface.getPath());
+		String interfaceType = a_interfaces.getType();
 		
-		boolean validConstant;
-		boolean errorsExist = false;
-		
-		for (Constant c : interfaceConstants)
+		for (String interfacePath : a_interfaces.getPaths())
 		{
-			String name = c.getName();
-			short value = c.getValue();
-			validConstant = true;
-			for (Entry<String, Short> entry : interfaceConstValueByName.entrySet())
+			if (!isFileExists(interfacePath)) continue;
+			List<Constant> interfaceConstants = a_interfaceConstRecognizer.getConstants(interfaceType, interfacePath);
+		
+			boolean validConstant;
+			boolean errorsExist = false;
+			
+			for (Constant c : interfaceConstants)
 			{
-				String entryName = entry.getKey();
-				if (entry.getValue().equals(value))
+				String name = c.getName();
+				Short value = Short.valueOf(c.getValue());
+				validConstant = true;
+				for (Entry<String, Short> entry : interfaceConstValueByName.entrySet())
 				{
-					if (allowedEqualConsts.containsKey(value))
+					String entryName = entry.getKey();
+					if (entry.getValue().equals(value))
 					{
-						List<String> allowedEqualNames = allowedEqualConsts.get(value);
-						if (!allowedEqualNames.contains(name) || !allowedEqualNames.contains(entryName))
+						if (allowedEqualConsts.containsKey(value))
+						{
+							List<String> allowedEqualNames = allowedEqualConsts.get(value);
+							if (!allowedEqualNames.contains(name) || !allowedEqualNames.contains(entryName))
+							{
+								validConstant = false;
+								errorsExist = true;
+								writeErrorConstIntoReport(name, value.shortValue(),
+														  entryName);
+							}
+						}
+						else
 						{
 							validConstant = false;
 							errorsExist = true;
-							writeErrorConstIntoReport(name, value, entryName);
+							writeErrorConstIntoReport(name, value.shortValue(),
+													  entryName);
 						}
 					}
-					else
+				}
+				if (validConstant)
+				{
+					interfaceConstValueByName.put(name, value);
+						
+					if (interfaceType.equals(Interfaces.RESOURCE_TYPE))
 					{
-						validConstant = false;
-						errorsExist = true;
-						writeErrorConstIntoReport(name, value, entryName);
+						m_allResourceInterfaceConstantValues.add(value);
+					}
+					if (interfaceType.equals(Interfaces.PROPERTY_TYPE))
+					{
+						m_allPropertyInterfaceConstantValues.add(value);
 					}
 				}
 			}
-			if (validConstant)
-			{
-				interfaceConstValueByName.put(name, value);
-				
-				if (interfaceType.equals(Constant.RESOURCE_TYPE))
-				{
-					m_allResourceInterfaceConstantValues.add(Short.valueOf(value));
-				}
-				if (interfaceType.equals(Constant.PROPERTY_TYPE))
-				{
-					m_allPropertyInterfaceConstantValues.add(Short.valueOf(value));
-				}
-			}
+			if (!errorsExist) writeMessageIntoReport(INFO, m_noErrMessage);
 		}
-		if (!errorsExist) writeMessageIntoReport(INFO, m_noErrMessage);
 	}
 
-	private Interface[] getInterfacesForValidation () throws IOException
+	private Interfaces[] getInterfacesForValidation () throws IOException
 	{
 		writeMessageIntoReport(INFO, "Проверка интерфейсов...");
-		
 		return m_configuration.getInterfaces();
 	}
 	
@@ -184,23 +189,28 @@ public class ResourceValidator
 	
 	private void validateXmlFiles () throws ParserConfigurationException, SAXException, IOException
 	{
-		writeMessageIntoReport(INFO, "Проверка xml-файлов...");
-		
 		IdParameterRecognizer tagRecognizer = new IdParameterRecognizer();
 		
-		String[] xmlFilePaths = m_configuration.getXmlFilePaths();
+		String[] xmlFilePaths = getXmlFilesForValidation();
 		for (String path : xmlFilePaths)
 		{
 			if (!isFileExists(path)) continue;
 			
-			List<Constant> resourcePars = tagRecognizer.getConstants(Constant.RESOURCE_TYPE, path);
-			List<Constant> propertyPars = tagRecognizer.getConstants(Constant.PROPERTY_TYPE, path);
+			List<Constant> resourcePars = tagRecognizer.getConstants(Interfaces.RESOURCE_TYPE, path);
+			List<Constant> propertyPars = tagRecognizer.getConstants(Interfaces.PROPERTY_TYPE, path);
 			
-			boolean errorsExist = checkXmlParameters(resourcePars, m_allResourceInterfaceConstantValues);
-			errorsExist = checkXmlParameters(propertyPars, m_allPropertyInterfaceConstantValues);
-			
-			if (!errorsExist) writeMessageIntoReport(INFO, m_noErrMessage);
+			if (!checkXmlParameters(resourcePars, m_allResourceInterfaceConstantValues) ||
+				!checkXmlParameters(propertyPars, m_allPropertyInterfaceConstantValues))
+			{
+				writeMessageIntoReport(INFO, m_noErrMessage);
+			}
 		}
+	}
+	
+	private String[] getXmlFilesForValidation () throws IOException
+	{
+		writeMessageIntoReport(INFO, "Проверка xml-файлов...");
+		return m_configuration.getXmlFilePaths();
 	}
 	
 	private boolean checkXmlParameters (List<Constant> a_xmlParameters,

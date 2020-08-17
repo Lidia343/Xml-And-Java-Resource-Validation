@@ -29,8 +29,8 @@ import dcmdon.resources.validation.model.file.xml.IdParameterRecognizer;
 
 public class ResourceValidator
 {
-	public static final short OK_RESULT_CODE = 0;
-	public static final short ERROR_RESULT_CODE = 1;
+	public static final int OK_RESULT_CODE = 0;
+	public static final int ERROR_RESULT_CODE = 1;
 	
 	private final String m_info = "[INFO]\t";
 	private final String m_error = "[ERR!]\t";
@@ -42,7 +42,7 @@ public class ResourceValidator
 	
 	private StringBuilder m_reportBuilder = new StringBuilder();
 	
-	private int m_resultCode = 0;
+	private int m_resultCode = OK_RESULT_CODE;
 	
 	private List<Short> m_allResourceInterfaceConstantValues = new ArrayList<>();
 	private List<Short>  m_allPropertyInterfaceConstantValues = new ArrayList<>();
@@ -168,7 +168,7 @@ public class ResourceValidator
 	
 	private void writeMessageIntoReport (String a_prefix, String a_message)
 	{
-		if (a_prefix.equals(m_error)) m_resultCode = 1;
+		if (a_prefix.equals(m_error)) m_resultCode = ERROR_RESULT_CODE;
 		m_reportBuilder.append(a_prefix + a_message + System.lineSeparator());
 	}
 	

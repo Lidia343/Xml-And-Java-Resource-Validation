@@ -13,11 +13,19 @@ public class Application implements IApplication
 											"dcmdon.resources.validation" + File.separator + "config.json";
 	
 	@Override
-	public Object start(IApplicationContext a_context) throws Exception
+	public Object start(IApplicationContext a_context)
 	{
-		ResourceValidator validator = new ResourceValidator(m_configFilePath);
-		System.out.print(validator.validateAndGetReport());
-		return Integer.valueOf(validator.getValidationResultCode());
+		try
+		{
+			ResourceValidator validator = new ResourceValidator(m_configFilePath);
+			System.out.print(validator.validateAndGetReport());
+			return Integer.valueOf(validator.getValidationResultCode());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Integer.valueOf(ResourceValidator.ERROR_RESULT_CODE);
+		}
 	}
 
 	@Override

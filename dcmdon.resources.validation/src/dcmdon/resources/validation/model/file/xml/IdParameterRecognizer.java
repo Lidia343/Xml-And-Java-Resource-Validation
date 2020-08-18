@@ -1,5 +1,6 @@
 package dcmdon.resources.validation.model.file.xml;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +8,8 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -27,20 +30,29 @@ public class IdParameterRecognizer implements IConstantRecognizer
 	}
 	
 	@Override
-	public List<Constant> getConstants(String a_constantType, String a_fileWithConstantPath) throws SAXException, IOException
+	public List<Constant> getConstants(String a_constantType, String a_fileWithConstantPath) throws SAXException, IOException, ParserConfigurationException
 	{
-		Document document = m_docBuilder.parse(a_fileWithConstantPath);
+		Document document = m_docBuilder.newDocument();
 		
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+	    SAXParser parser = factory.newSAXParser();
+		XMLHandler handler = new XMLHandler(document);
+	    parser.parse(new File(a_fileWithConstantPath), handler);
+	     
 		NodeList nodes = document.getDocumentElement().getElementsByTagName(a_constantType);
 		
 		List<Constant> parameters = new ArrayList<>();
 		for (int i = 0; i < nodes.getLength(); i++)
 		{
 			Node node = nodes.item(i);
+			
+			int lineNumber = Integer.parseInt((String)node.getUserData(Constant.DATA_LINE_NUMBER));
+			int columnNumber =  Integer.parseInt((String)node.getUserData(Constant.DATA_COLUMN_NUMBER));
 			String name = Constant.NAME_ID;
+			
 			Constant parameter = new Constant(a_constantType, name, Short.parseShort(node.
 											  getAttributes().getNamedItem(name).
-											  getNodeValue()));
+											  getNodeValue()), lineNumber, columnNumber);
 			parameters.add(parameter);
 		}
 		return parameters;

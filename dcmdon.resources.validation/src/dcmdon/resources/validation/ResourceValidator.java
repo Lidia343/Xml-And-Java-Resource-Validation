@@ -223,7 +223,9 @@ public class ResourceValidator
 			if (!a_interfaceConstantValues.contains(value))
 			{
 				errorsExist = true;
-				writeMessageIntoReport(ERROR, "Параметр " + value + " атрибута "
+				writeMessageIntoReport(ERROR, "Строка: " + par.getLineNumber() +
+									   ". Столбец: " + par.getColumnNumber() +
+									   ". Параметр " + value + " атрибута "
 									   + par.getName() +" тега " + par.getType() +
 									   " не найден в константах соответствующих " +
 									   "интерфейсов");

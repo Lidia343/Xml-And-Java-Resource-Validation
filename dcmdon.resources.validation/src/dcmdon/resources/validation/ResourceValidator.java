@@ -185,7 +185,7 @@ public class ResourceValidator
 		writeMessageIntoReport(ERROR, "Константа " + a_errorConst.getName() +
 							   " = " + a_errorConst.getValue() +
 							   " равна константе " + a_equalConst.getName() +
-							   " (" + a_equalConst.getInterfacePath() + ").");
+							   " (" + a_equalConst.getInterfacePath() + ")");
 	}
 	
 	private void validateXmlFiles () throws ParserConfigurationException, SAXException, IOException

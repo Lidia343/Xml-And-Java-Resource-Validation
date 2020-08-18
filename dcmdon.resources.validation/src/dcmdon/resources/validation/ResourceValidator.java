@@ -77,7 +77,7 @@ public class ResourceValidator
 	{
 		Map<Short, List<String>> allowedEqualConsts = a_interfaces.getAllowedEqualConstNamesByValue();
 		
-		Map<String, Short> interfaceConstValueByName = new HashMap<>();
+		Map<String, Constant> interfaceConstByName = new HashMap<>();
 		
 		String interfaceType = a_interfaces.getType();
 		
@@ -94,34 +94,35 @@ public class ResourceValidator
 				String name = c.getName();
 				Short value = Short.valueOf(c.getValue());
 				validConstant = true;
-				for (Entry<String, Short> entry : interfaceConstValueByName.entrySet())
+				for (Entry<String, Constant> entry : interfaceConstByName.entrySet())
 				{
-					String entryName = entry.getKey();
-					if (entry.getValue().equals(value))
+					String entryConstName = entry.getKey();
+					Constant entryConst = entry.getValue();
+					Short entryConstValue = Short.valueOf(entryConst.getValue());
+					
+					if (value.equals(entryConstValue))
 					{
 						if (allowedEqualConsts.containsKey(value))
 						{
-							List<String> allowedEqualNames = allowedEqualConsts.get(value);
-							if (!allowedEqualNames.contains(name) || !allowedEqualNames.contains(entryName))
+							List<String> allowedEqualNames = allowedEqualConsts.get(entryConstValue);
+							if (!allowedEqualNames.contains(name) || !allowedEqualNames.contains(entryConstName))
 							{
 								validConstant = false;
 								errorsExist = true;
-								writeErrorConstIntoReport(name, value.shortValue(),
-														  entryName);
+								writeErrorConstIntoReport(c, entryConst);
 							}
 						}
 						else
 						{
 							validConstant = false;
 							errorsExist = true;
-							writeErrorConstIntoReport(name, value.shortValue(),
-													  entryName);
+							writeErrorConstIntoReport(c, entryConst);
 						}
 					}
 				}
 				if (validConstant)
 				{
-					interfaceConstValueByName.put(name, value);
+					interfaceConstByName.put(name, c);
 						
 					if (interfaceType.equals(Interfaces.RESOURCE_TYPE))
 					{
@@ -178,13 +179,13 @@ public class ResourceValidator
 		m_reportBuilder.append(a_prefix + a_message + System.lineSeparator());
 	}
 	
-	private void writeErrorConstIntoReport (String a_errorConstName,
-											short a_errorConstValue,
-											String a_equalConstName)
+	private void writeErrorConstIntoReport (Constant a_errorConst,
+											Constant a_equalConst)
 	{
-		writeMessageIntoReport(ERROR, "Значение " + a_errorConstValue +
-							   " константы " + a_errorConstName +
-		        			   " равно значению константы " + a_equalConstName);
+		writeMessageIntoReport(ERROR, "Константа " + a_errorConst.getName() +
+							   " = " + a_errorConst.getValue() +
+							   " равна константе " + a_equalConst.getName() +
+							   " (" + a_equalConst.getInterfacePath() + ").");
 	}
 	
 	private void validateXmlFiles () throws ParserConfigurationException, SAXException, IOException
@@ -199,8 +200,8 @@ public class ResourceValidator
 			List<Constant> resourcePars = tagRecognizer.getConstants(Interfaces.RESOURCE_TYPE, path);
 			List<Constant> propertyPars = tagRecognizer.getConstants(Interfaces.PROPERTY_TYPE, path);
 			
-			if (!checkXmlParameters(resourcePars, m_allResourceInterfaceConstantValues) ||
-				!checkXmlParameters(propertyPars, m_allPropertyInterfaceConstantValues))
+			if (checkXmlParameters(resourcePars, m_allResourceInterfaceConstantValues) &&
+				checkXmlParameters(propertyPars, m_allPropertyInterfaceConstantValues))
 			{
 				writeMessageIntoReport(INFO, m_noErrMessage);
 			}
@@ -216,13 +217,13 @@ public class ResourceValidator
 	private boolean checkXmlParameters (List<Constant> a_xmlParameters,
 									    List<Short> a_interfaceConstantValues)
 	{
-		boolean errorsExist = false;
+		boolean result = true;
 		for (Constant par : a_xmlParameters)
 		{
 			short value = par.getValue();
 			if (!a_interfaceConstantValues.contains(value))
 			{
-				errorsExist = true;
+				result = false;
 				writeMessageIntoReport(ERROR, "Строка: " + par.getLineNumber() +
 									   ". Столбец: " + par.getColumnNumber() +
 									   ". Параметр " + value + " атрибута "
@@ -231,7 +232,7 @@ public class ResourceValidator
 									   "интерфейсов");
 			}
 		}
-		return errorsExist;
+		return result;
 	}
 	
 	public String validateAndGetReport () throws UnsupportedEncodingException, FileNotFoundException, IOException, ParserConfigurationException, SAXException

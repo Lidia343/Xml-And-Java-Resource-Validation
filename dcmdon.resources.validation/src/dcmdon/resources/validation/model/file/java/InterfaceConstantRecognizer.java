@@ -26,7 +26,8 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 				{
 					String name = scanner.next();
 					short value = Short.parseShort(scanner.next()); //Добавить проверку на выражение
-					Constant constant = new Constant(a_constantType, name, value);
+					Constant constant = new Constant(a_constantType, name, value,
+													 a_fileWithConstantPath);
 					constants.add(constant);
 				}
 			}

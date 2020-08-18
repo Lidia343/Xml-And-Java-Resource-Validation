@@ -200,8 +200,12 @@ public class ResourceValidator
 			List<Constant> resourcePars = tagRecognizer.getConstants(Interfaces.RESOURCE_TYPE, path);
 			List<Constant> propertyPars = tagRecognizer.getConstants(Interfaces.PROPERTY_TYPE, path);
 			
-			if (checkXmlParameters(resourcePars, m_allResourceInterfaceConstantValues) &&
-				checkXmlParameters(propertyPars, m_allPropertyInterfaceConstantValues))
+			boolean rightParameters = checkXmlParameters(resourcePars,
+													   m_allResourceInterfaceConstantValues);
+			rightParameters = checkXmlParameters(propertyPars,
+											   m_allPropertyInterfaceConstantValues);
+			
+			if (rightParameters)
 			{
 				writeMessageIntoReport(INFO, m_noErrMessage);
 			}

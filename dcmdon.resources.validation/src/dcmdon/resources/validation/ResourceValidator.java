@@ -33,9 +33,14 @@ public class ResourceValidator
 	public static final int ERROR_RESULT_CODE = 1;
 	
 	public static final String INFO = "[INFO]\t";
+	public static final String WARNING = "[WARN]\t";
 	public static final String ERROR = "[ERR!]\t";
 	
+	public static final String ERROR_MESSAGE_END = " в конфигурационном файле.";
+	
 	private final String m_noErrMessage = "Ошибки не обнаружены.";
+	
+	private final String m_fileNotFoundMessage = "Файл не найден.";
 	
 	private String m_configFilePath;
 	
@@ -64,6 +69,7 @@ public class ResourceValidator
 	{
 		InterfaceConstantRecognizer interfaceConstRecognizer = new InterfaceConstantRecognizer();
 		Interfaces[] interfaces = getInterfacesForValidation();
+		
 		for (Interfaces i : interfaces)
 		{
 			validateInterfaceConstants (interfaceConstRecognizer, i);
@@ -72,18 +78,18 @@ public class ResourceValidator
 	
 	private void validateInterfaceConstants (InterfaceConstantRecognizer a_interfaceConstRecognizer,
 											 Interfaces a_interfaces) throws NumberFormatException,
-																           FileNotFoundException, 
-																           NoSuchElementException
+																             FileNotFoundException, 
+																             NoSuchElementException
 	{
+		String interfaceType = a_interfaces.getType();
+		
 		Map<Short, List<String>> allowedEqualConsts = a_interfaces.getAllowedEqualConstNamesByValue();
 		
 		Map<String, Constant> interfaceConstByName = new HashMap<>();
 		
-		String interfaceType = a_interfaces.getType();
-		
 		for (String interfacePath : a_interfaces.getPaths())
 		{
-			if (!isFileExists(interfacePath)) continue;
+			if (!writeFileExistingIntoReport(interfacePath)) continue;
 			List<Constant> interfaceConstants = a_interfaceConstRecognizer.getConstants(interfaceType, interfacePath);
 		
 			boolean validConstant;
@@ -161,16 +167,25 @@ public class ResourceValidator
 		}
 	}
 	
-	private boolean isFileExists (String a_filePath)
+	private boolean writeFileExistingIntoReport (String a_filePath)
 	{
 		writeMessageIntoReport(INFO, a_filePath + ":");
 		File javaFile = new File(a_filePath);
 		if (!javaFile.exists())
 		{
-			writeMessageIntoReport(ERROR, "Файл не найден.");
+			writeMessageIntoReport(ERROR, m_fileNotFoundMessage);
 			return false;
 		}
 		return true;
+	}
+	
+	private void writeNotExistingFileIntoReport (File a_file)
+	{
+		if (!a_file.exists())
+		{
+			writeMessageIntoReport(INFO, a_file.getAbsolutePath() + ":");
+			writeMessageIntoReport(ERROR, m_fileNotFoundMessage);
+		}
 	}
 	
 	private void writeMessageIntoReport (String a_prefix, String a_message)
@@ -192,30 +207,148 @@ public class ResourceValidator
 	{
 		IdParameterRecognizer tagRecognizer = new IdParameterRecognizer();
 		
-		String[] xmlFilePaths = getXmlFilesForValidation();
-		for (String path : xmlFilePaths)
+		List<File> xmlFilesForValidation = getXmlFilesForValidation();
+		if (xmlFilesForValidation.size() == 0)
 		{
-			if (!isFileExists(path)) continue;
+			writeMessageIntoReport(WARNING, "Не указаны файлы для проверки" + ERROR_MESSAGE_END);
+		}
+		for (File xmlFile : xmlFilesForValidation)
+		{
+			String path = xmlFile.getAbsolutePath();
+			
+			writeMessageIntoReport(INFO, path + ":");
 			
 			List<Constant> resourcePars = tagRecognizer.getConstants(Interfaces.RESOURCE_TYPE, path);
 			List<Constant> propertyPars = tagRecognizer.getConstants(Interfaces.PROPERTY_TYPE, path);
 			
-			boolean rightParameters = checkXmlParameters(resourcePars,
-													   m_allResourceInterfaceConstantValues);
-			rightParameters = checkXmlParameters(propertyPars,
-											   m_allPropertyInterfaceConstantValues);
-			
-			if (rightParameters)
+			if (!(!checkXmlParameters(resourcePars, m_allResourceInterfaceConstantValues) ||
+				!checkXmlParameters(propertyPars,m_allPropertyInterfaceConstantValues)))
 			{
 				writeMessageIntoReport(INFO, m_noErrMessage);
 			}
 		}
 	}
 	
-	private String[] getXmlFilesForValidation () throws IOException
+	private List<File> getXmlFilesForValidation () throws IOException
 	{
 		writeMessageIntoReport(INFO, "Проверка xml-файлов...");
-		return m_configuration.getXmlFilePaths();
+		
+		List<File> result = new ArrayList<>();
+		
+		List<File> uniqueXmlFiles = getUniqueXmlFilesForValidation(m_configuration.
+																   getXmlFilePaths());
+		for (File xmlFile : uniqueXmlFiles)
+		{
+			if (xmlFile.isDirectory())
+			{
+				result.addAll(getXmlFiles(xmlFile));
+			}
+			else
+			{
+				result.add(xmlFile);
+			}
+		}
+		return result;
+	}
+	
+	private List<File> getUniqueXmlFilesForValidation (String[] a_xmlFilePaths)
+	{
+		List<File> result = new ArrayList<>();
+		addXmlFilesToList(result, a_xmlFilePaths);
+		
+		List<File> filesForRemoving = getXmlFilesForRemoving(result);
+		for (File file : filesForRemoving)
+		{
+			result.remove(file);
+		}
+		
+		return result;
+	}
+	
+	private void addXmlFilesToList (List<File> result, String[] a_xmlFilePaths)
+	{
+		for (String path : a_xmlFilePaths)
+		{
+			File file = new File(path);
+			
+			writeNotExistingFileIntoReport(file);
+			
+			if (file.isFile())
+			{
+				addXmlFileToList(file, result);
+			}
+			if (file.isDirectory())
+			{
+				result.add(file);
+			}
+		}
+	}
+	
+	private List<File> getXmlFilesForRemoving (List<File> a_xmlFiles)
+	{
+		List<File> filesForRemoving = new ArrayList<>();
+		
+		int size = a_xmlFiles.size();
+		for (int i = 0; i < size - 1; i++)
+		{
+			for (int j = i + 1; j < size; j++)
+			{
+				File file1 = a_xmlFiles.get(i);
+				File file2 = a_xmlFiles.get(j);
+				
+				String path1 = file1.getAbsolutePath();
+				String path2 = file2.getAbsolutePath();
+				
+				if (path1.contains(path2))
+				{
+					if (!filesForRemoving.contains(file1))
+					{
+						filesForRemoving.add(file1);
+					}
+				}
+				else
+				if (path2.contains(path1))
+				{
+					if (!filesForRemoving.contains(file2))
+					{
+						filesForRemoving.add(file2);
+					}
+				}
+			}
+		}
+		return filesForRemoving;
+	}
+	
+	private List<File> getXmlFiles (File a_parent)
+	{
+		List<File> files = new ArrayList<>();
+
+		if (!a_parent.isDirectory())
+		{
+			addXmlFileToList(a_parent, files);
+			return files;
+		}
+
+		for (File f : a_parent.listFiles())
+		{
+			if (f.isDirectory())
+			{
+				files.addAll(getXmlFiles(f));
+			}
+			else
+			{
+				addXmlFileToList(f, files);
+			}
+		}
+		return files;
+	}
+	
+	private void addXmlFileToList (File a_file, List<File> a_list)
+	{
+		if (a_file.getName().endsWith(".xml"))
+		{
+			a_list.add(a_file);
+		}
 	}
 	
 	private boolean checkXmlParameters (List<Constant> a_xmlParameters,

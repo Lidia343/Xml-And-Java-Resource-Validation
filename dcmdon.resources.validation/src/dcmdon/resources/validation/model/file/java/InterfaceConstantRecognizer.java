@@ -9,7 +9,6 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jdt.annotation.NonNull;
 import dcmdon.resources.validation.model.file.Constant;
 import dcmdon.resources.validation.model.file.IConstantRecognizer;
 

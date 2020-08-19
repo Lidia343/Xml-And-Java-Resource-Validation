@@ -49,10 +49,24 @@ public class IdParameterRecognizer implements IConstantRecognizer
 			int lineNumber = Integer.parseInt((String)node.getUserData(Constant.DATA_LINE_NUMBER));
 			int columnNumber =  Integer.parseInt((String)node.getUserData(Constant.DATA_COLUMN_NUMBER));
 			String name = Constant.NAME_ID;
+			short value = -1;
 			
-			Constant parameter = new Constant(a_constantType, name, Short.parseShort(node.
-											  getAttributes().getNamedItem(name).
-											  getNodeValue()), lineNumber, columnNumber);
+			try
+			{
+				value = Short.parseShort(node.getAttributes().getNamedItem(name).
+						  		 		 getNodeValue());
+			}
+			catch (NumberFormatException e)
+			{
+				throw new NumberFormatException("Строка: " + lineNumber +
+												". Столбец: " + columnNumber +
+												". Значение атрибута " +
+												name + " должно соответствовать " +
+												"типу " + Constant.TYPE + ".");
+			}
+			
+			Constant parameter = new Constant(a_constantType, name, value,
+											  lineNumber, columnNumber);
 			parameters.add(parameter);
 		}
 		return parameters;

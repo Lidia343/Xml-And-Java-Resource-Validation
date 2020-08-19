@@ -1,5 +1,6 @@
 package dcmdon.resources.validation.main;
 
+import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import dcmdon.resources.validation.ResourceValidator;
@@ -31,14 +32,17 @@ public class Application implements IApplication
 			System.out.print(validator.validateAndGetReport());
 			return Integer.valueOf(validator.getValidationResultCode());
 		}
-		catch (NullPointerException e)
-		{
-			System.out.println(e.getMessage());
-			return Integer.valueOf(ResourceValidator.ERROR_RESULT_CODE);
-		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			if (e instanceof AssertionFailedException ||
+				e instanceof IllegalArgumentException)
+			{
+				System.out.println(e.getMessage());
+			}
+			else
+			{
+				e.printStackTrace();
+			}
 			return Integer.valueOf(ResourceValidator.ERROR_RESULT_CODE);
 		}
 	}

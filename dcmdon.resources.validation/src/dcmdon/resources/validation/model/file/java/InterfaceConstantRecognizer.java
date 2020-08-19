@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.jdt.annotation.NonNull;
 import dcmdon.resources.validation.model.file.Constant;
 import dcmdon.resources.validation.model.file.IConstantRecognizer;
 
@@ -24,8 +26,23 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 			{
 				if (scanner.next().equals(Constant.TYPE))
 				{
+					String errorMessagePart = "В интерфейсе " + a_fileWithConstantPath +
+							   				  " ожидалось ";
+					
 					String name = scanner.next();
-					short value = Short.parseShort(scanner.next()); //Добавить проверку на выражение
+					Assert.isNotNull(name, errorMessagePart + "имя константы.");
+					
+					short value = -1;
+					try
+					{
+						value = Short.parseShort(scanner.next());
+					}
+					catch (NumberFormatException e)
+					{
+						throw new NumberFormatException(errorMessagePart + "значение константы " +
+														name + ".");
+					}
+					
 					Constant constant = new Constant(a_constantType, name, value,
 													 a_fileWithConstantPath);
 					constants.add(constant);

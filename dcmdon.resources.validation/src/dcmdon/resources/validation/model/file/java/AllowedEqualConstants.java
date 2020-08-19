@@ -5,14 +5,14 @@ import java.util.List;
 public class AllowedEqualConstants
 {
 	private List<String> names;
-	private short value;
+	private String value;
 	
 	public List<String> getNames ()
 	{
 		return names;
 	}
 	
-	public short getValue ()
+	public String getValue ()
 	{
 		return value;
 	}

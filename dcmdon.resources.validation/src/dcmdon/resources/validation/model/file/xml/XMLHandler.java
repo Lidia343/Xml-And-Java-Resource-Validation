@@ -36,14 +36,16 @@ public class XMLHandler extends DefaultHandler
 	{
 		addTextIfNeeded();
 		Element el = m_document.createElement(a_qName);
+		
 		for (int i = 0; i < a_attributes.getLength(); i++)
 		{
-			el.setAttribute(a_attributes.getQName(i), a_attributes.getValue(i));
+			String attrName = a_attributes.getQName(i);
+			el.setAttribute(attrName, a_attributes.getValue(i));
 		}
 		el.setUserData(Constant.DATA_LINE_NUMBER,
-					   String.valueOf(m_locator.getLineNumber()), null);
-		el.setUserData(Constant.DATA_COLUMN_NUMBER,
-					   String.valueOf(m_locator.getColumnNumber()), null);
+				   	   String.valueOf(m_locator.getLineNumber()),
+				   	   null);
+		
 		m_elementStack.push(el);
 	}
 

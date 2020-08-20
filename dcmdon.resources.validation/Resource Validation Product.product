@@ -35,8 +35,10 @@
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
+      <plugin id="org.eclipse.jdt.annotation"/>
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.compatibility.state" fragment="true"/>
    </plugins>
-   
+
+
 </product>

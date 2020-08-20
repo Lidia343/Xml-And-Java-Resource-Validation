@@ -30,14 +30,16 @@ public class IdParameterRecognizer implements IConstantRecognizer
 	}
 	
 	@Override
-	public List<Constant> getConstants(String a_constantType, String a_fileWithConstantPath) throws SAXException, IOException, ParserConfigurationException
+	public List<Constant> getConstants(String a_constantType, String a_xmlFilePath) throws SAXException,
+																						   IOException,
+																						   ParserConfigurationException
 	{
 		Document document = m_docBuilder.newDocument();
 		
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 	    SAXParser parser = factory.newSAXParser();
 		XMLHandler handler = new XMLHandler(document);
-	    parser.parse(new File(a_fileWithConstantPath), handler);
+	    parser.parse(new File(a_xmlFilePath), handler);
 	     
 		NodeList nodes = document.getDocumentElement().getElementsByTagName(a_constantType);
 		
@@ -47,7 +49,6 @@ public class IdParameterRecognizer implements IConstantRecognizer
 			Node node = nodes.item(i);
 			
 			int lineNumber = Integer.parseInt((String)node.getUserData(Constant.DATA_LINE_NUMBER));
-			int columnNumber =  Integer.parseInt((String)node.getUserData(Constant.DATA_COLUMN_NUMBER));
 			String name = Constant.NAME_ID;
 			short value = -1;
 			
@@ -59,14 +60,13 @@ public class IdParameterRecognizer implements IConstantRecognizer
 			catch (NumberFormatException e)
 			{
 				throw new NumberFormatException("Строка: " + lineNumber +
-												". Столбец: " + columnNumber +
 												". Значение атрибута " +
 												name + " должно соответствовать " +
 												"типу " + Constant.TYPE + ".");
 			}
 			
 			Constant parameter = new Constant(a_constantType, name, value,
-											  lineNumber, columnNumber);
+											  lineNumber);
 			parameters.add(parameter);
 		}
 		return parameters;

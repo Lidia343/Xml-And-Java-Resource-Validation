@@ -17,7 +17,7 @@ public class Interfaces
 	
 	private String type;
 	private AllowedEqualConstants[] allowedEqualConstants;
-	private String[] paths;
+	private Map<String, String> idByPath;
 	
 	public String getType ()
 	{
@@ -64,17 +64,17 @@ public class Interfaces
 		return constMap;
 	}
 	
-	public String[] getPaths ()
+	public Map<String, String> getIdByPath ()
 	{
-		String errorMessage = "Укажите пути к интерфейсам типа " +
+		String errorMessage = "Укажите пути и id интерфейсов типа " +
 							   getType() + ResourceValidator.ERROR_MESSAGE_END;
 		
-		Assert.isNotNull(paths, errorMessage);
+		Assert.isNotNull(idByPath, errorMessage);
 		
-		if (paths.length == 0)
+		if (idByPath.size() == 0)
 		{
 			throw new IllegalArgumentException(errorMessage);
 		}
-		return paths;
+		return idByPath;
 	}
 }

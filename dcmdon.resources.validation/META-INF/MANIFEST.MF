@@ -8,5 +8,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: dcmdon.resources.validation, dcmdon.resources.validation.main, dcmdon.resources.validation.model, dcmdon.resources.validation.model.file, dcmdon.resources.validation.model.file.java, dcmdon.resources.validation.model.file.xml
 Require-Bundle: org.eclipse.equinox.app,
  com.google.gson,
- org.eclipse.equinox.registry,
- org.eclipse.jdt.annotation
+ org.eclipse.equinox.registry

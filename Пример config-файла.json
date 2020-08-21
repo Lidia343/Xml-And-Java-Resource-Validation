@@ -1,8 +1,7 @@
 {
 	"xmlFilePaths":
 	[
-		"C:\\Users\\Black\\dcmdon.resources.validation\\xml\\test1\\test.xml",
-		"C:\\Users\\Black\\dcmdon.resources.validation\\xml\\test.xml"
+		"C:\\Users\\Black\\Desktop\\testXML\\xml"
 	],
 	"interfaces":
 	[
@@ -19,12 +18,11 @@
 					"value": 144
 				}
 			],
-			"paths":
+			"idByPath":
 			[
-				"C:\\Users\\Black\\Desktop\\constant-test\\IResources1.java",
-				"C:\\Users\\Black\\Desktop\\constant-test\\IResources2.java"
+				["C:\\Users\\Black\\Desktop\\testInt\\IResources1.java", "core"],
+				["C:\\Users\\Black\\Desktop\\testInt\\IResources2.java", "railway"]
 			]
-			
 		},
 		{
 			"type": "Property",
@@ -35,10 +33,10 @@
 					"value": 102
 				}
 			],
-			"paths":
+			"idByPath":
 			[
-				"C:\\Users\\Black\\Desktop\\constant-test\\IProperties1.java",
-				"C:\\Users\\Black\\Desktop\\constant-test\\IProperties2.java"
+			  	["C:\\Users\\Black\\Desktop\\testInt\\IProperties1.java", "core"],
+				["C:\\Users\\Black\\Desktop\\testInt\\IProperties2.java", "core"]
 			]
 		}
 	]

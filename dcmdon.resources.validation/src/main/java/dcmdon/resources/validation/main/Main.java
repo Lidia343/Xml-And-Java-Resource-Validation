@@ -10,9 +10,18 @@ public class Main
 {
 	private static final String PLUGIN_ID = "dcmdon.resources.validation";
 	
-	private static final String ERROR_MESSAGE =
-	"Укажите путь к исполняемому файлу (" + PLUGIN_ID + ".exe), а также путь " +
-	"к файлу конфигурации (как первый аргумент команды).";
+	private static final String ERROR_MESSAGE = "Запуск приложения " + PLUGIN_ID +
+												".jar для проверки интерфейсов " +
+												"и xml-файлов." +
+												System.lineSeparator() +
+												System.lineSeparator() +
+												"java -jar путь/к/приложению/" +
+												PLUGIN_ID + ".jar <путь/к/" +
+												"файлу/конфигурации>" + 
+												System.lineSeparator() +
+												System.lineSeparator() +
+												"Формат файла конфигурации - " +
+												"JSON." + System.lineSeparator();
 	
 	/**
 	 * Точка входа в програму.
@@ -25,7 +34,7 @@ public class Main
 		{
 			if (a_args.length == 0)
 			{
-				System.out.println(ResourceValidator.ERROR + ERROR_MESSAGE);
+				System.out.println(ERROR_MESSAGE);
 				System.exit(ResourceValidator.ERROR_RESULT_CODE);
 			}
 			

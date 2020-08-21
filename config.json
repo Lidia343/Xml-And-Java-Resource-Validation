@@ -1,0 +1,49 @@
+{
+	"xmlFilePaths":
+	[
+		"C:\\Users\\Black\\Desktop\\testXML\\xml\\folder\\folder\\3",
+		"C:\\Users\\Black\\Desktop\\testXML\\xml\\folder\\folder\\3\\3.xml",
+		"C:\\Users\\Black\\Desktop\\testXML\\xml\\folder",
+		"C:\\Users\\Black\\Desktop\\testXML\\xml",
+		"C:\\Users\\Black\\Desktop\\testXML\\xml\\1.xml"
+	],
+	"interfaces":
+	[
+		{
+			"type": "Resource",
+			"allowedEqualConstants":
+			[
+				{
+					"names": ["RES_ID_WORKBENCH_STATE", "RES_ID_NET"],
+					"value": 5001
+				},
+				{
+					"names": ["RES_ID_MODULE", "RES_ID_OCCURRENCES_CONFIGURATION"],
+					"value": 144
+				}
+			],
+			"idByPath":
+			[
+				["C:\\Users\\Black\\Desktop\\testInt\\IResources1.java", "core"],
+				["C:\\Users\\Black\\Desktop\\testInt\\IResources2.java", "railway"]
+			]
+		},
+		{
+			"type": "Property",
+			"allowedEqualConstants":
+			[
+				{
+					"names": ["PROP_ID_CODE", "PROP_ID_NUM"],
+					"value": 102
+				}
+			],
+			"idByPath":
+			[
+			  	["C:\\Users\\Black\\Desktop\\testInt\\IProperties1.java", "core"],
+				["C:\\Users\\Black\\Desktop\\testInt\\IResources1.java", "core"],
+				["C:\\Users\\Black\\Desktop\\testInt\\IResources2.java", "railway"],
+				["C:\\Users\\Black\\Desktop\\testInt\\IProperties2.java", "core"]
+			]
+		}
+	]
+}

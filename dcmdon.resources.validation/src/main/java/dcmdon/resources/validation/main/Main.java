@@ -41,7 +41,8 @@ public class Main
 			String configFilePath = a_args[0];
 			
 			ResourceValidator validator = new ResourceValidator(configFilePath);
-			System.out.print(validator.validateAndGetReport());
+			System.out.print(validator.validateAndGetReport() +
+									   System.lineSeparator());
 			if (validator.getValidationResultCode() ==
 				ResourceValidator.ERROR_RESULT_CODE)
 			{

@@ -282,6 +282,9 @@ public class ResourceValidator
 		
 		if (pathsForRemoving.size() != 0)
 		{
+			//Удаление последнего перехода на новую строку:
+			warnPaths.delete(warnPaths.length() - 2, warnPaths.length());
+			
 			m_reportBuilder.append(System.lineSeparator());
 			writeMessageIntoReport(WARNING,	"В интерфейсах типа " +
 					 						m_propertyInterfaceType + 

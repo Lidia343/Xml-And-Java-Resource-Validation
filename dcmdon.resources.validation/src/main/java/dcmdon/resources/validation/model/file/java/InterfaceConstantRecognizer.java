@@ -6,18 +6,21 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Scanner;
 
-import org.eclipse.core.runtime.Assert;
 import dcmdon.resources.validation.model.file.Constant;
 import dcmdon.resources.validation.model.file.IConstantRecognizer;
 
+/**
+ * Распознаватель констант интерфейсов.
+ */
 public class InterfaceConstantRecognizer implements IConstantRecognizer
 {
 	@Override
 	public List<Constant> getConstants(String a_interfaceType,
-			   						   String a_interfacePath)
-			   						   throws FileNotFoundException,
+			   						   String a_interfacePath) throws
+									   FileNotFoundException,
 			   						   NoSuchElementException,
 			   						   NumberFormatException
 	{
@@ -25,11 +28,16 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 	}
 	
 	/**
-	 * Описать
+	 * Возвращает распознанные константы интерфейса типа a_interfaceType
+	 * из файла a_interfacePath.
 	 * @param @Nullable a_interfaceId
+	 * 				    Id интерфейса. Если значение равно null,
+	 * 					id будет установлено равным a_interfacePath
 	 * @param a_interfaceType
+	 * 		  Тип интерфейса
 	 * @param a_interfacePath
-	 * @return
+	 * 		  Путь к интерфейсу
+	 * @return список констант типа short интерфейса a_interfacePath
 	 * @throws FileNotFoundException
 	 * @throws NoSuchElementException
 	 * @throws NumberFormatException
@@ -46,6 +54,7 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 										   (new FileReader
 										   (a_interfacePath))))
 		{
+			//Установка разделителей:
 			scanner.useDelimiter("[\\p{javaWhitespace}]*=" +
 								 "[\\p{javaWhitespace}]*|" +
 								 "[\\p{javaWhitespace}]+|;");
@@ -57,13 +66,18 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 											  a_interfacePath +
 							   				  " ожидалось ";
 					
+					//Чтение имени константы:
 					String name = scanner.next();
-					Assert.isNotNull(name, errorMessagePart +
-									 "имя константы.");
+					Objects.requireNonNull(name, errorMessagePart +
+									 	         "имя константы.");
 					
 					short value = -1;
 					try
 					{
+						/*
+						 * Чтение и преобразование к типу short
+						 * значения константы:
+						 */
 						value = Short.parseShort(scanner.next());
 					}
 					catch (NumberFormatException e)
@@ -77,6 +91,8 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 					{
 						a_interfaceId = a_interfacePath;
 					}
+					
+					//Создание объекта константы:
 					Constant constant = new Constant(a_interfaceType,
 													 name, value,
 													 a_interfacePath,

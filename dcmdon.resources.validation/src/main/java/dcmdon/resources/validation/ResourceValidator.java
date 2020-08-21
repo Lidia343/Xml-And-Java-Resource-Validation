@@ -51,7 +51,7 @@ public class ResourceValidator
 	
 	private Configuration m_configuration;
 	
-	private StringBuilder m_reportBuilder = new StringBuilder();
+	private StringBuilder m_reportBuilder;
 	
 	private int m_resultCode = OK_RESULT_CODE;
 	
@@ -76,6 +76,7 @@ public class ResourceValidator
 	 */
 	private void validateAllResources () throws Exception
 	{
+		m_reportBuilder = new StringBuilder();
 		m_configuration = readConfiguration();
 		validateInterfaces();
 		validateXmlFiles();
@@ -108,17 +109,25 @@ public class ResourceValidator
 	 * @throws NumberFormatException 
 	 * @throws Exception 
 	 */
-	private void validateInterfaceConstants (InterfaceConstantRecognizer a_interfaceConstRecognizer,
-											 Interfaces a_interfaces) throws NumberFormatException, FileNotFoundException, NoSuchElementException
+	private void validateInterfaceConstants (InterfaceConstantRecognizer
+											 a_interfaceConstRecognizer,
+											 Interfaces a_interfaces) throws
+											 NumberFormatException,
+											 FileNotFoundException,
+											 NoSuchElementException
 	{
 		String interfaceType = a_interfaces.getType();
 		
-		//Константы, значения которых могут повторяться в рамках одного типа интерфейсов:
-		Map<Short, List<String>> allowedEqualConsts = a_interfaces.getAllowedEqualConstNamesByValue();
+		/*
+		 * Константы, значения которых могут повторяться в рамках
+		 * одного типа интерфейсов:
+		 */
+		Map<Short, List<String>> allowedEqualConsts =
+		a_interfaces.getAllowedEqualConstNamesByValue();
 		
 		/*
-		 * Отображение для записи в него правильных констант из числа всех и сравнения
-		 * проверяемых констант с ними:
+		 * Отображение для записи в него правильных констант из числа всех
+		 * и сравнения проверяемых констант с ними:
 		 */
 		Map<String, Constant> interfaceConstByName = new HashMap<>();
 		
@@ -129,9 +138,10 @@ public class ResourceValidator
 			if (!writeFileExistingIntoReport(interfacePath)) continue;
 			
 			String interfaceId = idByPath.get(interfacePath);
-			List<Constant> interfaceConstants = a_interfaceConstRecognizer.getConstants(interfaceId,
-																						interfaceType,
-																						interfacePath);
+			List<Constant> interfaceConstants = a_interfaceConstRecognizer.
+					                            getConstants(interfaceId,
+															interfaceType,
+															interfacePath);
 		
 			/*
 			 * Переменная для записи в неё информации о правильности
@@ -165,8 +175,11 @@ public class ResourceValidator
 					{
 						if (allowedEqualConsts.containsKey(value))
 						{
-							List<String> allowedEqualNames = allowedEqualConsts.get(entryConstValue);
-							if (!allowedEqualNames.contains(name) || !allowedEqualNames.contains(entryConstName))
+							List<String> allowedEqualNames = allowedEqualConsts.
+															 get(entryConstValue);
+							
+							if (!allowedEqualNames.contains(name) ||
+							    !allowedEqualNames.contains(entryConstName))
 							{
 								validConstant = false;
 								errorsExist = true;
@@ -230,7 +243,10 @@ public class ResourceValidator
 	 */
 	private Configuration readConfiguration () throws IOException
 	{
-		try (BufferedReader reader = new BufferedReader (new InputStreamReader(new FileInputStream(m_configFilePath), "UTF-8")))
+		try (BufferedReader reader = new BufferedReader (new InputStreamReader(
+														 new FileInputStream(
+														 m_configFilePath),
+														 "UTF-8")))
 		{
 			StringBuilder stringBuilder = new StringBuilder();
 			String line = reader.readLine();
@@ -321,7 +337,8 @@ public class ResourceValidator
 				   			  " = " + a_errorConst.getValue() +
 				   			  " равна константе " + a_equalConst.getName();
 		
-		if (!a_errorConst.getInterfacePath().equals(a_equalConst.getInterfacePath()))
+		if (!a_errorConst.getInterfacePath().equals(a_equalConst.
+													getInterfacePath()))
 		{
 			errorMessage += " (" + a_equalConst.getInterfaceId() + ")";
 		}
@@ -339,7 +356,8 @@ public class ResourceValidator
 		List<File> xmlFilesForValidation = getXmlFilesForValidation();
 		if (xmlFilesForValidation.size() == 0)
 		{
-			writeMessageIntoReport(WARNING, "Не указаны файлы для проверки" + ERROR_MESSAGE_END);
+			writeMessageIntoReport(WARNING, "Не указаны файлы для проверки" +
+											 ERROR_MESSAGE_END);
 		}
 		for (File xmlFile : xmlFilesForValidation)
 		{
@@ -349,16 +367,20 @@ public class ResourceValidator
 			writeMessageIntoReport(INFO, path + ":");
 			
 			List<Constant> resourcePars = tagRecognizer.
-										  getConstants(Interfaces.RESOURCE_TYPE, path);
+										  getConstants(Interfaces.RESOURCE_TYPE,
+												  	   path);
 			List<Constant> propertyPars = tagRecognizer.
-										  getConstants(Interfaces.PROPERTY_TYPE, path);
+										  getConstants(Interfaces.PROPERTY_TYPE,
+												       path);
 			
 			/*
 			 * Если все параметры правильные, записывает в отчёт
 			 * сообщение об отсутствии ошибок:
 			 */
-			if (!(!checkXmlParameters(resourcePars, m_allResourceInterfaceConstantValues) ||
-				!checkXmlParameters(propertyPars,m_allPropertyInterfaceConstantValues)))
+			if (!(!checkXmlParameters(resourcePars,
+									  m_allResourceInterfaceConstantValues) ||
+				!checkXmlParameters(propertyPars,
+									m_allPropertyInterfaceConstantValues)))
 			{
 				writeMessageIntoReport(INFO, m_noErrMessage);
 			}
@@ -376,8 +398,8 @@ public class ResourceValidator
 		
 		List<File> result = new ArrayList<>();
 		
-		List<File> uniqueXmlFiles = getUniqueXmlFilesForValidation(m_configuration.
-																   getXmlFilePaths());
+		List<File> uniqueXmlFiles =
+		getUniqueXmlFilesForValidation(m_configuration.getXmlFilePaths());
 		for (File xmlFile : uniqueXmlFiles)
 		{
 			if (xmlFile.isDirectory())
@@ -421,7 +443,8 @@ public class ResourceValidator
 	 */
 	private void removeFilesWithRedundantPaths (List<File> a_xmlFiles)
 	{
-		List<File> filesWithRedundantPaths = getFilesWithRedundantPaths(a_xmlFiles);
+		List<File> filesWithRedundantPaths =
+		getFilesWithRedundantPaths(a_xmlFiles);
 		for (File file : filesWithRedundantPaths)
 		{
 			a_xmlFiles.remove(file);
@@ -436,7 +459,8 @@ public class ResourceValidator
 	 * @param a_xmlFilePaths
 	 * 		  Пути к файлам
 	 */
-	private void addXmlFilesToList (List<File> a_result, String[] a_xmlFilePaths)
+	private void addXmlFilesToList (List<File> a_result,
+									String[] a_xmlFilePaths)
 	{
 		for (String path : a_xmlFilePaths)
 		{
@@ -590,8 +614,8 @@ public class ResourceValidator
 			{
 				result = false;
 				writeMessageIntoReport(ERROR, "Строка: " + par.getLineNumber() +
-									   ". Тег: " + par.getType() + ". " + par.getName() +
-									   " = " + value);
+									   ". Тег: " + par.getType() + ". " +
+									   par.getName() + " = " + value);
 			}
 		}
 		return result;

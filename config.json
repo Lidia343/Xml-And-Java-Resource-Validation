@@ -1,11 +1,7 @@
 {
 	"xmlFilePaths":
 	[
-		"C:\\Users\\Black\\Desktop\\testXML\\xml\\folder\\folder\\3",
-		"C:\\Users\\Black\\Desktop\\testXML\\xml\\folder\\folder\\3\\3.xml",
-		"C:\\Users\\Black\\Desktop\\testXML\\xml\\folder",
-		"C:\\Users\\Black\\Desktop\\testXML\\xml",
-		"C:\\Users\\Black\\Desktop\\testXML\\xml\\1.xml"
+		"C:\\Users\\Black\\Desktop\\testXML\\xml"
 	],
 	"interfaces":
 	[
@@ -40,8 +36,6 @@
 			"idByPath":
 			[
 			  	["C:\\Users\\Black\\Desktop\\testInt\\IProperties1.java", "core"],
-				["C:\\Users\\Black\\Desktop\\testInt\\IResources1.java", "core"],
-				["C:\\Users\\Black\\Desktop\\testInt\\IResources2.java", "railway"],
 				["C:\\Users\\Black\\Desktop\\testInt\\IProperties2.java", "core"]
 			]
 		}

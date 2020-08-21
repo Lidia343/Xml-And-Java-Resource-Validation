@@ -14,14 +14,37 @@ import dcmdon.resources.validation.model.file.Constant;
  */
 public class Interfaces
 {
-	public static final String RESOURCE_TYPE = "Resource";
-	public static final String PROPERTY_TYPE = "Property";
+	public enum TYPE
+	{
+		RESOURCE
+		{
+			@Override
+			public String toString ()
+			{
+				return "Resource";
+			}
+		},
+		
+		PROPERTY
+		{
+			@Override
+			public String toString ()
+			{
+				return "Property";
+			}
+		}
+	}
 	
-	private String type;
+	private TYPE type;
 	private AllowedEqualConstants[] allowedEqualConstants;
 	private Map<String, String> files;
 	
-	public String getType ()
+	public void setType (TYPE a_type)
+	{
+		type = a_type;
+	}
+	
+	public TYPE getType ()
 	{
 		Objects.requireNonNull(type, "Укажите тип интерфейсов" + 
 			     			    	 ResourceValidator.ERROR_MESSAGE_END);

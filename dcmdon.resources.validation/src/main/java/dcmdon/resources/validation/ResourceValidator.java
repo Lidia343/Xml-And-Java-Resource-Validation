@@ -43,6 +43,9 @@ public class ResourceValidator
 	
 	public static final String ERROR_MESSAGE_END = " в конфигурационном файле.";
 	
+	private final String m_resourceInterfaceType = Interfaces.TYPE.RESOURCE.toString();
+	private final String m_propertyInterfaceType = Interfaces.TYPE.PROPERTY.toString();
+	
 	private final String m_noErrMessage = "Ошибки не обнаружены.";
 	
 	private final String m_fileNotFoundMessage = "Файл не найден.";
@@ -116,7 +119,7 @@ public class ResourceValidator
 											 FileNotFoundException,
 											 NoSuchElementException
 	{
-		String interfaceType = a_interfaces.getType();
+		String interfaceType = a_interfaces.getType().toString();
 		
 		/*
 		 * Константы, значения которых могут повторяться в рамках
@@ -205,11 +208,11 @@ public class ResourceValidator
 				{
 					interfaceConstByName.put(name, c);
 						
-					if (interfaceType.equals(Interfaces.RESOURCE_TYPE))
+					if (interfaceType.equals( m_resourceInterfaceType))
 					{
 						m_allResourceInterfaceConstantValues.add(value);
 					}
-					if (interfaceType.equals(Interfaces.PROPERTY_TYPE))
+					if (interfaceType.equals( m_propertyInterfaceType))
 					{
 						m_allPropertyInterfaceConstantValues.add(value);
 					}
@@ -251,7 +254,7 @@ public class ResourceValidator
 		Interfaces resources = new Interfaces();
 		Interfaces properties = new Interfaces();
 		
-		if (a_interfaces[0].getType().equals(Interfaces.RESOURCE_TYPE))
+		if (a_interfaces[0].getType().equals(Interfaces.TYPE.RESOURCE))
 		{
 			resources = a_interfaces[0];
 			properties = a_interfaces[1];
@@ -281,10 +284,10 @@ public class ResourceValidator
 		{
 			m_reportBuilder.append(System.lineSeparator());
 			writeMessageIntoReport(WARNING,	"В интерфейсах типа " +
-											Interfaces.PROPERTY_TYPE + 
+					 						m_propertyInterfaceType + 
 											" обнаружены пути, совпадающие " +
 											"с путями интерфейсов типа " +
-											Interfaces.RESOURCE_TYPE + ": " +
+											m_resourceInterfaceType + ": " +
 											System.lineSeparator() +
 											warnPaths.toString());
 		}
@@ -297,7 +300,7 @@ public class ResourceValidator
 				throw new IllegalArgumentException("Укажите оригинальные " +
 												   "пути к интерфейсам " +
 												   "типа " + 
-												    Interfaces.PROPERTY_TYPE +
+												    m_propertyInterfaceType +
 												    System.lineSeparator() +
 												    ERROR_MESSAGE_END);
 			}
@@ -439,10 +442,10 @@ public class ResourceValidator
 			writeMessageIntoReport(INFO, path + ":");
 			
 			List<Constant> resourcePars = tagRecognizer.
-										  getConstants(Interfaces.RESOURCE_TYPE,
+										  getConstants(m_resourceInterfaceType,
 												  	   path);
 			List<Constant> propertyPars = tagRecognizer.
-										  getConstants(Interfaces.PROPERTY_TYPE,
+										  getConstants(m_propertyInterfaceType,
 												       path);
 			
 			/*

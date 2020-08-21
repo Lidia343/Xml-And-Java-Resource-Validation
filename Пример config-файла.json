@@ -6,7 +6,7 @@
 	"interfaces":
 	[
 		{
-			"type": "Resource",
+			"type": "RESOURCE",
 			"allowedEqualConstants":
 			[
 				{
@@ -25,7 +25,7 @@
 			]
 		},
 		{
-			"type": "Property",
+			"type": "PROPERTY",
 			"allowedEqualConstants":
 			[
 				{

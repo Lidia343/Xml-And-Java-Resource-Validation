@@ -132,6 +132,7 @@ public class ResourceValidator
 		Map<String, Constant> interfaceConstByName = new HashMap<>();
 		
 		Map<String, String> idByPath = a_interfaces.getIdByPath();
+		
 		for (String interfacePath : idByPath.keySet())
 		{
 			m_reportBuilder.append(System.lineSeparator());
@@ -222,7 +223,7 @@ public class ResourceValidator
 			if (!errorsExist) writeMessageIntoReport(INFO, m_noErrMessage);
 		}
 	}
-
+	
 	/**
 	 * Возвращает интерфейсы для проверки и печатает в отчёт
 	 * сообщение о проверке интерфейсов.
@@ -230,8 +231,79 @@ public class ResourceValidator
 	 */
 	private Interfaces[] getInterfacesForValidation ()
 	{
+		m_reportBuilder.append(System.lineSeparator());
 		writeMessageIntoReport(INFO, "Проверка интерфейсов...");
-		return m_configuration.getInterfaces();
+		return removeEqualInterfacePaths(m_configuration.getInterfaces());
+	}
+	
+	/**
+	 * Удаляет из одного объекта класса Interfaces
+	 * (типа Interfaces.PROPERTY_TYPE) пути,
+	 * совпадающие с путями интерфейсов типа
+	 * Interfaces.RESOURCE_TYPE.
+	 * @param a_interfaces
+	 * 		  Интерфейсы для проверки
+	 * @return Список интерфейсов с оригинальными
+	 * путями
+	 */
+	private Interfaces[] removeEqualInterfacePaths (Interfaces[] a_interfaces)
+	{
+		Interfaces resources = new Interfaces();
+		Interfaces properties = new Interfaces();
+		
+		if (a_interfaces[0].getType().equals(Interfaces.RESOURCE_TYPE))
+		{
+			resources = a_interfaces[0];
+			properties = a_interfaces[1];
+		}
+		else
+		{
+			resources = a_interfaces[1];
+			properties = a_interfaces[0];
+		}
+		
+		List<String> pathsForRemoving = new ArrayList<>();
+		StringBuilder warnPaths = new StringBuilder();
+		Map<String, String> propIdByPath = properties.getIdByPath();
+		for (String resPath : resources.getIdByPath().keySet())
+		{
+			for (String propPath : propIdByPath.keySet())
+			{
+				if (propPath.equals(resPath))
+				{
+					pathsForRemoving.add(propPath);
+					warnPaths.append(WARNING + propPath + System.lineSeparator());
+				}
+			}
+		}
+		
+		if (pathsForRemoving.size() != 0)
+		{
+			m_reportBuilder.append(System.lineSeparator());
+			writeMessageIntoReport(WARNING,	"В интерфейсах типа " +
+											Interfaces.PROPERTY_TYPE + 
+											" обнаружены пути, совпадающие " +
+											"с путями интерфейсов типа " +
+											Interfaces.RESOURCE_TYPE + ": " +
+											System.lineSeparator() +
+											warnPaths.toString());
+		}
+		
+		for (String path : pathsForRemoving)
+		{
+			propIdByPath.remove(path);
+			if (propIdByPath.size() == 0)
+			{
+				throw new IllegalArgumentException("Укажите оригинальные " +
+												   "пути к интерфейсам " +
+												   "типа " + 
+												    Interfaces.PROPERTY_TYPE +
+												    System.lineSeparator() +
+												    ERROR_MESSAGE_END);
+			}
+		}
+		
+		return a_interfaces;
 	}
 	
 	/**

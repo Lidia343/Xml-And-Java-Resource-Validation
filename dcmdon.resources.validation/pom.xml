@@ -47,6 +47,9 @@
            <plugin>
         	<groupId>org.apache.maven.plugins</groupId>
         	<artifactId>maven-shade-plugin</artifactId>
+        	<configuration>
+        		<createDependencyReducedPom>false</createDependencyReducedPom>
+   			</configuration>
         	<version>3.2.4</version>
        		 <executions>
          		 <execution>

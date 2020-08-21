@@ -18,6 +18,7 @@ import org.xml.sax.SAXException;
 
 import dcmdon.resources.validation.model.file.Constant;
 import dcmdon.resources.validation.model.file.IConstantRecognizer;
+import dcmdon.resources.validation.model.file.java.Interfaces.TYPE;
 
 /**
  * Распознаватель параметров атрибутов Id тегов Resource
@@ -50,7 +51,7 @@ public class IdParameterRecognizer implements IConstantRecognizer
 	 * @return распознанные атрибуты
 	 */
 	@Override
-	public List<Constant> getConstants(String a_constantType,
+	public List<Constant> getConstants(TYPE a_constantType,
 									   String a_xmlFilePath)
 									   throws SAXException,
 											  IOException,
@@ -65,7 +66,7 @@ public class IdParameterRecognizer implements IConstantRecognizer
 	     
 	    //Список тегов a_constantType:
 		NodeList tags = document.getDocumentElement().
-								 getElementsByTagName(a_constantType);
+								 getElementsByTagName(a_constantType.toString());
 		
 		List<Constant> attributes = new ArrayList<>();
 		for (int i = 0; i < tags.getLength(); i++)

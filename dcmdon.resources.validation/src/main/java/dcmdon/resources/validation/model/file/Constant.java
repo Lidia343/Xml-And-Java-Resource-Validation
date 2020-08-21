@@ -1,5 +1,7 @@
 package dcmdon.resources.validation.model.file;
 
+import dcmdon.resources.validation.model.file.java.Interfaces.TYPE;
+
 /**
  * Константа, которая может являться
  * константой интерфейса или атрибутом
@@ -16,7 +18,7 @@ public class Constant
 	 */
 	public static final String DATA_LINE_NUMBER = "lineNumber";
 	
-	private String m_type;
+	private TYPE m_type;
 	private String m_name;
 	private short m_value;
 	
@@ -42,7 +44,7 @@ public class Constant
 	 * 		  Id интерфейса, содержащего константу
 	 *    	  (необязательно указывать уникальный id)
 	 */
-	public Constant (String a_type, String a_name, short a_value,
+	public Constant (TYPE a_type, String a_name, short a_value,
 					 String a_interfacePath, String a_interfaceId)
 	{
 		this(a_type, a_name, a_value, -1);
@@ -65,7 +67,7 @@ public class Constant
 	 * 		  номер строки, на которой находится
 	 * 		  атрибут в xml-файле
 	 */
-	public Constant (String a_type, String a_name, short a_value,
+	public Constant (TYPE a_type, String a_name, short a_value,
 					 int a_lineNumber)
 	{
 		m_type = a_type;
@@ -75,7 +77,7 @@ public class Constant
 		m_lineNumber = a_lineNumber;
 	}
 	
-	public String getType ()
+	public TYPE getType ()
 	{
 		return m_type;
 	}

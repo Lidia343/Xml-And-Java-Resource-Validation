@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 import dcmdon.resources.validation.model.file.Constant;
 import dcmdon.resources.validation.model.file.IConstantRecognizer;
+import dcmdon.resources.validation.model.file.java.Interfaces.TYPE;
 
 /**
  * Распознаватель констант интерфейсов.
@@ -18,7 +19,7 @@ import dcmdon.resources.validation.model.file.IConstantRecognizer;
 public class InterfaceConstantRecognizer implements IConstantRecognizer
 {
 	@Override
-	public List<Constant> getConstants(String a_interfaceType,
+	public List<Constant> getConstants(TYPE a_interfaceType,
 			   						   String a_interfacePath) throws
 									   FileNotFoundException,
 			   						   NoSuchElementException,
@@ -43,7 +44,7 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 	 * @throws NumberFormatException
 	 */
 	public List<Constant> getConstants(String a_interfaceId,
-									   String a_interfaceType,
+									   TYPE a_interfaceType,
 									   String a_interfacePath)
 									   throws FileNotFoundException,
 									   NoSuchElementException,

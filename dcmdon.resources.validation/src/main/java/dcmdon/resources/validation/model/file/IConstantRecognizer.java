@@ -2,6 +2,8 @@ package dcmdon.resources.validation.model.file;
 
 import java.util.List;
 
+import dcmdon.resources.validation.model.file.java.Interfaces.TYPE;
+
 /**
  * Интерфейс распознавателя констант.
  */
@@ -17,6 +19,6 @@ public interface IConstantRecognizer
 	 * @return распознанные константы
 	 * @throws Exception
 	 */
-	List<Constant> getConstants (String a_constantType,
+	List<Constant> getConstants (TYPE a_constantType,
 								 String a_fileWithConstantPath) throws Exception;
 }

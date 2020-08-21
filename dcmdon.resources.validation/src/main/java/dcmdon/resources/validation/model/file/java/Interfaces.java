@@ -32,6 +32,19 @@ public class Interfaces
 			{
 				return "Property";
 			}
+		};
+		
+		public String getPrefix ()
+		{
+			if (this == RESOURCE)
+			{
+				return "RES";
+			}
+			if (this == PROPERTY)
+			{
+				return "PROP";
+			}
+			return null;
 		}
 	}
 	

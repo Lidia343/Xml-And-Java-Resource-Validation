@@ -19,7 +19,7 @@ public class Interfaces
 	
 	private String type;
 	private AllowedEqualConstants[] allowedEqualConstants;
-	private Map<String, String> idByPath;
+	private Map<String, String> files;
 	
 	public String getType ()
 	{
@@ -74,12 +74,12 @@ public class Interfaces
 		String errorMessage = "Укажите пути и id интерфейсов типа " +
 							   getType() + ResourceValidator.ERROR_MESSAGE_END;
 		
-		Objects.requireNonNull(idByPath, errorMessage);
+		Objects.requireNonNull(files, errorMessage);
 		
-		if (idByPath.size() == 0)
+		if (files.size() == 0)
 		{
 			throw new IllegalArgumentException(errorMessage);
 		}
-		return idByPath;
+		return files;
 	}
 }

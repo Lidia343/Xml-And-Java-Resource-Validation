@@ -1,8 +1,7 @@
 package dcmdon.resources.validation.model.file.java;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -21,9 +20,8 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 	@Override
 	public List<Constant> getConstants(TYPE a_interfaceType,
 			   						   String a_interfacePath) throws
-									   FileNotFoundException,
-			   						   NoSuchElementException,
-			   						   NumberFormatException
+									   NoSuchElementException,
+			   						   NumberFormatException, IOException
 	{
 		return getConstants(null, a_interfaceType, a_interfacePath);
 	}
@@ -39,26 +37,27 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 	 * @param a_interfacePath
 	 * 		  Путь к интерфейсу
 	 * @return список констант типа short интерфейса a_interfacePath
-	 * @throws FileNotFoundException
 	 * @throws NoSuchElementException
 	 * @throws NumberFormatException
+	 * @throws IOException 
 	 */
 	public List<Constant> getConstants(String a_interfaceId,
 									   TYPE a_interfaceType,
 									   String a_interfacePath)
-									   throws FileNotFoundException,
-									   NoSuchElementException,
-									   NumberFormatException
+									   throws NoSuchElementException,
+									   NumberFormatException,
+									   IOException
 	{
 		List<Constant> constants = new ArrayList<>();
-		try (Scanner scanner = new Scanner (new BufferedReader
-										   (new FileReader
-										   (a_interfacePath))))
+		
+		try (InputStream in = new CommentFilter(a_interfacePath).getFilteredStream();
+			 Scanner scanner = new Scanner (in))
 		{
 			//Установка разделителей:
 			scanner.useDelimiter("[\\p{javaWhitespace}]*=" +
 								 "[\\p{javaWhitespace}]*|" +
 								 "[\\p{javaWhitespace}]+|;");
+			
 			while (scanner.hasNext())
 			{
 				if (scanner.next().equals(Constant.TYPE))
@@ -69,6 +68,7 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 					
 					//Чтение имени константы:
 					String name = scanner.next();
+
 					Objects.requireNonNull(name, errorMessagePart +
 									 	         "имя константы.");
 					
@@ -87,7 +87,6 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 														"значение константы " +
 														name + ".");
 					}
-					
 					if (a_interfaceId == null)
 					{
 						a_interfaceId = a_interfacePath;

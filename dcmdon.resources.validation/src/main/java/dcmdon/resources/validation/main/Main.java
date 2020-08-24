@@ -10,7 +10,7 @@ public class Main
 {
 	private static final String PLUGIN_ID = "dcmdon.resources.validation";
 	
-	private static final String ERROR_MESSAGE = "Запуск приложения " + PLUGIN_ID +
+	private static final String HELP_MESSAGE = "Запуск приложения " + PLUGIN_ID +
 												".jar для проверки интерфейсов " +
 												"и xml-файлов." +
 												System.lineSeparator() +
@@ -34,7 +34,7 @@ public class Main
 		{
 			if (a_args.length == 0)
 			{
-				System.out.println(ERROR_MESSAGE);
+				System.out.println(HELP_MESSAGE);
 				System.exit(ResourceValidator.ERROR_RESULT_CODE);
 			}
 			

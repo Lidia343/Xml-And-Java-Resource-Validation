@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -67,7 +68,8 @@ public class ResourceValidator
 	 */
 	public ResourceValidator (String a_configFilePath)
 	{
-		 m_configFilePath = a_configFilePath;
+		 m_configFilePath = Objects.requireNonNull(a_configFilePath, "Путь к " +
+				 			"файлу конфигурации не должен быть равен null.");
 	}
 	
 	/**
@@ -373,9 +375,8 @@ public class ResourceValidator
 	private Configuration readConfiguration () throws IOException
 	{
 		try (BufferedReader reader = new BufferedReader (new InputStreamReader(
-														 new FileInputStream(
-														 m_configFilePath),
-														 "UTF-8")))
+		 			 			 		 new FileInputStream(m_configFilePath),
+		 			 			 		 "UTF-8")))
 		{
 			StringBuilder stringBuilder = new StringBuilder();
 			String line = reader.readLine();
@@ -389,7 +390,7 @@ public class ResourceValidator
 			return gson.fromJson(result, Configuration.class);
 		}
 	}
-	
+		
 	/**
 	 * Печатает в отчёт путь к файлу и, если файл
 	 * не существует, информацию о том, что он не

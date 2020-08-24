@@ -19,15 +19,15 @@ public class CommentFilter
 	
 	/**
 	 * Конструктор класса CommentFilter.
-	 * @param a_classPath
+	 * @param a_filePath
 	 * 		  Путь к файлу, содержащему
 	 * 		  текст с комментариями
 	 */
 	public CommentFilter (String a_filePath)
 	{
 		m_filePath = Objects.requireNonNull(a_filePath, "Путь к файлу " +
-														  "не должен быть " +
-														  "равен null.");
+														"не должен быть " +
+														"равен null.");
 	}
 	
 	/**

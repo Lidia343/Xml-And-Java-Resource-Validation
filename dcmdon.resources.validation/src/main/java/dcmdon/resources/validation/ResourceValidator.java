@@ -114,7 +114,7 @@ public class ResourceValidator
 											 a_interfaceConstRecognizer,
 											 Interfaces a_interfaces) throws
 											 NumberFormatException,
-											 FileNotFoundException,
+											 IOException,
 											 NoSuchElementException
 	{
 		TYPE interfaceType = a_interfaces.getType();
@@ -744,7 +744,9 @@ public class ResourceValidator
 				result = false;
 				writeMessageIntoReport(ERROR, "Строка: " + par.getLineNumber() +
 									   ". Тег: " + par.getType() + ". " +
-									   par.getName() + " = " + value);
+									   par.getName() + " = " + value +
+									   ". Параметр не найден в значениях " +
+									   "констант соответствующих интерфейсов.");
 			}
 		}
 		return result;

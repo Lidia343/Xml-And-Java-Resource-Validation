@@ -1,8 +1,8 @@
 {
 	"xmlFilePaths":
 	[
-		"src/test/resources/xml_file1.xml",
-		"src/test/resources/xml_file2.xml"
+		"src/test/resources/inval_xml_file1.xml",
+		"src/test/resources/inval_xml_file2.xml"
 	],
 	"interfaces":
 	[
@@ -21,8 +21,8 @@
 			],
 			"files":
 			[
-				["src/test/resources/resource_interface1.java", "core"],
-				["src/test/resources/resource_interface2.java", "railway"]
+				["src/test/resources/inval_resource_interface1.java", "core"],
+				["src/test/resources/inval_resource_interface2.java", "railway"]
 			]
 		},
 		{
@@ -36,8 +36,8 @@
 			],
 			"files":
 			[
-			  	["src/test/resources/property_interface1.java", "prop_core"],
-				["src/test/resources/property_interface2.java", "prop_railway"]
+			  	["src/test/resources/inval_property_interface1.java", "prop_core"],
+				["src/test/resources/inval_property_interface2.java", "prop_railway"]
 			]
 		}
 	]

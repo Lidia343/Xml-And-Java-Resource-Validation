@@ -1,0 +1,44 @@
+{
+	"xmlFilePaths":
+	[
+		"src/test/resources/val_xml_file1.xml",
+		"src/test/resources/val_xml_file2.xml"
+	],
+	"interfaces":
+	[
+		{
+			"type": "RESOURCE",
+			"allowedEqualConstants":
+			[
+				{
+					"names": ["RES_ID_POOL", "RES_ID_UNIT", "RES_ID_INUNIT"],
+					"value": 140
+				},
+				{
+					"names": ["RES_ID_APP", "RES_ID_PORT"],
+					"value": 5012
+				}
+			],
+			"files":
+			[
+				["src/test/resources/val_resource_interface1.java", "core"],
+				["src/test/resources/val_resource_interface2.java", "railway"]
+			]
+		},
+		{
+			"type": "PROPERTY",
+			"allowedEqualConstants":
+			[
+				{
+					"names": ["PROP_ID_NAME", "PROP_ID_CODE"],
+					"value": 101
+				}
+			],
+			"files":
+			[
+			  	["src/test/resources/val_property_interface1.java", "prop_core"],
+				["src/test/resources/val_property_interface2.java", "prop_railway"]
+			]
+		}
+	]
+}

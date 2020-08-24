@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resdb>
+  <Resources>
+		<Classes>
+			<Resource Class="RouteModelProvider" Id="5001" Extends="Configuration">
+				<Properties>
+					
+				</Properties>
+			</Resource>
+			<Resource Class="RouteModelSubscriber" Id="5001" Extends="Subscriber">
+				<Properties>
+					<Property Identifier="MonitoringAreas" Id="127" Type="relation" Kind="Declare"     Use="optional">
+						<Member Class="MonitoringArea"/>
+					</Property>
+				</Properties>
+			</Resource>
+			<Resource Class="DCPolygonProvider" Id="500" Extends="Configuration">
+				<Properties>
+					<Property Identifier="MonitoringAreas" Id="113" Type="relation" Kind="Declare"      Use="optional">
+						<Member Class="MonitoringArea"/>
+					</Property>
+				</Properties>
+			</Resource>
+        </Classes>
+    </Resources>
+</resdb>

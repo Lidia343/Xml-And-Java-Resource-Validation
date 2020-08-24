@@ -12,25 +12,60 @@ import dcmdon.resources.validation.ResourceValidator;
  */
 public class ResourceValidatorTest
 {
-	//Путь к файлу конфигурации:
-	private final String m_configFilePath = "src/test/resources/config.json";
+	//Пути к файлам конфигурации:
+	
+	private final String m_validConfigFilePath = "src/test/resources/" +
+												 "valid_config.json";
+	
+	private final String m_invalidConfigFilePath = "src/test/resources/" +
+												   "invalid_config.json";
+	
+	/**
+	 * Проверяет заведомо корректные ресурсы.
+	 * Вызывает метод "validateAndGetReport"
+	 * класса ResourceValidator и проверяет
+	 * код, получаемый с помощью метода 
+	 * "getValidationResultCode()", на равенство
+	 * коду ResourceValidator.OK_RESULT_CODE.
+	 * @throws Exception
+	 */
+	@Test
+	public void testValidResources() throws Exception
+	{
+		test(m_validConfigFilePath, ResourceValidator.OK_RESULT_CODE);
+	}
+	
+	/**
+	 * Проверяет заведомо некорректные ресурсы.
+	 * Вызывает метод "validateAndGetReport"
+	 * класса ResourceValidator и проверяет
+	 * код, получаемый с помощью метода 
+	 * "getValidationResultCode()", на равенство
+	 * коду ResourceValidator.ERROR_RESULT_CODE.
+	 * @throws Exception
+	 */
+	@Test
+	public void testInvalidResources() throws Exception
+	{
+		test(m_invalidConfigFilePath, ResourceValidator.ERROR_RESULT_CODE);
+	}
 	
 	/**
 	 * Вызывает метод "validateAndGetReport"
 	 * класса ResourceValidator и проверяет
 	 * код, получаемый с помощью метода 
 	 * "getValidationResultCode()", на равенство
-	 * коду отсутствия любых ошибок во время
-	 * выполнения программы проверки файлов,
-	 * указанных в файле конфигурации.
+	 * коду a_code.
+	 * @param a_code
+	 * 		  Код для сравнения
+	 * @param a_filePath
+	 * 		  Путь к файлу конфигурации
 	 * @throws Exception
 	 */
-	@Test
-	public void test() throws Exception
+	private void test (String a_filePath, int a_code) throws Exception
 	{
-		ResourceValidator validator = new ResourceValidator(m_configFilePath);
+		ResourceValidator validator = new ResourceValidator(a_filePath);
 		validator.validateAndGetReport();
-		assertEquals(validator.getValidationResultCode(),
-					           ResourceValidator.OK_RESULT_CODE);
+		assertEquals(validator.getValidationResultCode(), a_code);
 	}
 }

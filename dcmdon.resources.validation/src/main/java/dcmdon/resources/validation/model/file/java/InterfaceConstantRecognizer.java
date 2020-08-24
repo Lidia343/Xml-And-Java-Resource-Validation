@@ -50,7 +50,7 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 	{
 		List<Constant> constants = new ArrayList<>();
 		
-		try (InputStream in = new CommentFilter(a_interfacePath).getFilteredStream();
+		try (InputStream in = new CommentFilter(a_interfacePath).getFilteredText();
 			 Scanner scanner = new Scanner (in))
 		{
 			//Установка разделителей:

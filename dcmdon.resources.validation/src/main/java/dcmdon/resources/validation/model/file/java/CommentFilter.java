@@ -15,7 +15,7 @@ import java.util.Objects;
  */
 public class CommentFilter
 {
-	private String m_classPath;
+	private String m_filePath;
 	
 	/**
 	 * Конструктор класса CommentFilter.
@@ -23,9 +23,9 @@ public class CommentFilter
 	 * 		  Путь к файлу, содержащему
 	 * 		  текст с комментариями
 	 */
-	public CommentFilter (String a_classPath)
+	public CommentFilter (String a_filePath)
 	{
-		m_classPath = Objects.requireNonNull(a_classPath, "Путь к файлу " +
+		m_filePath = Objects.requireNonNull(a_filePath, "Путь к файлу " +
 														  "не должен быть " +
 														  "равен null.");
 	}
@@ -35,11 +35,11 @@ public class CommentFilter
 	 * от комментариев текста
 	 * @throws IOException
 	 */
-	public InputStream getFilteredStream () throws IOException
+	public InputStream getFilteredText () throws IOException
 	{
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try (BufferedReader reader = new BufferedReader(new FileReader
-													   (m_classPath)))
+													   (m_filePath)))
 		{
 			//Состояние автомата:
 			int state = 0;

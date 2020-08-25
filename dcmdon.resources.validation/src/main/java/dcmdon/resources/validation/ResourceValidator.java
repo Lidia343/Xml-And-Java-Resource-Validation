@@ -1,11 +1,10 @@
 package dcmdon.resources.validation;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -375,20 +374,10 @@ public class ResourceValidator
 	 */
 	private Configuration readConfiguration () throws IOException
 	{
-		try (BufferedReader reader = new BufferedReader (new InputStreamReader(
-		 			 			 		 new FileInputStream(m_configFilePath),
-		 			 			 		 "UTF-8")))
+		try (Reader reader = new FileReader (m_configFilePath))
 		{
-			StringBuilder stringBuilder = new StringBuilder();
-			String line = reader.readLine();
-			while (line != null)
-			{
-				stringBuilder.append(line);
-				line = reader.readLine();
-			}
-			String result = stringBuilder.toString();
 			Gson gson = new GsonBuilder().create();
-			return gson.fromJson(result, Configuration.class);
+			return gson.fromJson(reader, Configuration.class);
 		}
 	}
 		

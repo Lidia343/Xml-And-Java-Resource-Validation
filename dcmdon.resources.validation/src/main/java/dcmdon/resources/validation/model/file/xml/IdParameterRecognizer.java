@@ -18,7 +18,7 @@ import org.xml.sax.SAXException;
 
 import dcmdon.resources.validation.model.file.Constant;
 import dcmdon.resources.validation.model.file.IConstantRecognizer;
-import dcmdon.resources.validation.model.file.java.Interfaces.TYPE;
+import dcmdon.resources.validation.model.file.java.Interfaces.Type;
 
 /**
  * Распознаватель параметров атрибутов Id тегов Resource
@@ -51,7 +51,7 @@ public class IdParameterRecognizer implements IConstantRecognizer
 	 * @return распознанные атрибуты
 	 */
 	@Override
-	public List<Constant> getConstants(TYPE a_constantType,
+	public List<Constant> getConstants(Type a_constantType,
 									   String a_xmlFilePath)
 									   throws SAXException,
 											  IOException,

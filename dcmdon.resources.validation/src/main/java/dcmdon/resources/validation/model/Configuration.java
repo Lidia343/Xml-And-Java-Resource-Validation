@@ -45,9 +45,9 @@ public class Configuration
 		{
 			throw new IllegalArgumentException("Укажите информацию об интерфейсах " +
 					  						   "двух типов (" +
-					  						   Interfaces.TYPE.RESOURCE.toString().toUpperCase() +
+					  						   Interfaces.Type.RESOURCE.toString().toUpperCase() +
 					  						   " и " +
-					  						   Interfaces.TYPE.PROPERTY.toString().toUpperCase() +
+					  						   Interfaces.Type.PROPERTY.toString().toUpperCase() +
 					  						   ")" + ResourceValidator.ERROR_MESSAGE_END);
 		}
 		return interfaces;

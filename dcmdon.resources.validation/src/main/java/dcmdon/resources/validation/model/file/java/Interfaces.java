@@ -14,7 +14,7 @@ import dcmdon.resources.validation.model.file.Constant;
  */
 public class Interfaces
 {
-	public enum TYPE
+	public enum Type
 	{
 		RESOURCE
 		{
@@ -48,11 +48,11 @@ public class Interfaces
 		}
 	}
 	
-	private TYPE type;
+	private Type type;
 	private AllowedEqualConstants[] allowedEqualConstants;
 	private Map<String, String> files;
 	
-	public TYPE getType ()
+	public Type getType ()
 	{
 		Objects.requireNonNull(type, "Укажите тип интерфейсов" + 
 			     			    	 ResourceValidator.ERROR_MESSAGE_END);

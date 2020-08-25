@@ -21,7 +21,7 @@ import dcmdon.resources.validation.model.Configuration;
 import dcmdon.resources.validation.model.file.Constant;
 import dcmdon.resources.validation.model.file.IConstantRecognizer;
 import dcmdon.resources.validation.model.file.java.Interfaces;
-import dcmdon.resources.validation.model.file.java.Interfaces.TYPE;
+import dcmdon.resources.validation.model.file.java.Interfaces.Type;
 import dcmdon.resources.validation.model.file.java.InterfaceConstantRecognizer;
 import dcmdon.resources.validation.model.file.xml.IdParameterRecognizer;
 
@@ -119,7 +119,7 @@ public class ResourceValidator
 											 IOException,
 											 NoSuchElementException
 	{
-		TYPE interfaceType = a_interfaces.getType();
+		Type interfaceType = a_interfaces.getType();
 		
 		/*
 		 * Константы, значения которых могут повторяться в рамках
@@ -214,11 +214,11 @@ public class ResourceValidator
 				{
 					interfaceConstByName.put(name, c);
 						
-					if (interfaceType.equals(Interfaces.TYPE.RESOURCE))
+					if (interfaceType.equals(Interfaces.Type.RESOURCE))
 					{
 						m_allResourceInterfaceConstantValues.add(value);
 					}
-					if (interfaceType.equals(Interfaces.TYPE.PROPERTY))
+					if (interfaceType.equals(Interfaces.Type.PROPERTY))
 					{
 						m_allPropertyInterfaceConstantValues.add(value);
 					}
@@ -247,8 +247,8 @@ public class ResourceValidator
 	{
 		String errorMessage = "Константа " + a_constant.getName() +
 							  " имеет неверный префикс";
-		if (!(validateConstantPrefixForType(a_constant, TYPE.RESOURCE) ||
-			validateConstantPrefixForType(a_constant, TYPE.PROPERTY)))
+		if (!(validateConstantPrefixForType(a_constant, Type.RESOURCE) ||
+			validateConstantPrefixForType(a_constant, Type.PROPERTY)))
 		{
 			writeMessageIntoReport(ERROR, errorMessage);
 			return false;
@@ -268,7 +268,7 @@ public class ResourceValidator
 	 * @return true - если префикс константы
 	 * соответствует типу a_type, false - иначе.
 	 */
-	private boolean validateConstantPrefixForType (Constant a_constant, TYPE a_type)
+	private boolean validateConstantPrefixForType (Constant a_constant, Type a_type)
 	{
 		if (a_constant.getType() == a_type)
 		{
@@ -307,7 +307,7 @@ public class ResourceValidator
 		Interfaces resources = new Interfaces();
 		Interfaces properties = new Interfaces();
 		
-		if (a_interfaces[0].getType().equals(Interfaces.TYPE.RESOURCE))
+		if (a_interfaces[0].getType().equals(Interfaces.Type.RESOURCE))
 		{
 			resources = a_interfaces[0];
 			properties = a_interfaces[1];
@@ -340,10 +340,10 @@ public class ResourceValidator
 			
 			m_reportBuilder.append(System.lineSeparator());
 			writeMessageIntoReport(WARNING,	"В интерфейсах типа " +
-											Interfaces.TYPE.PROPERTY + 
+											Interfaces.Type.PROPERTY + 
 											" обнаружены пути, совпадающие " +
 											"с путями интерфейсов типа " +
-											Interfaces.TYPE.RESOURCE + ": " +
+											Interfaces.Type.RESOURCE + ": " +
 											System.lineSeparator() +
 											warnPaths.toString());
 		}
@@ -356,7 +356,7 @@ public class ResourceValidator
 				throw new IllegalArgumentException("Укажите оригинальные " +
 												   "пути к интерфейсам " +
 												   "типа " + 
-												    Interfaces.TYPE.PROPERTY +
+												    Interfaces.Type.PROPERTY +
 												    System.lineSeparator() +
 												    ERROR_MESSAGE_END);
 			}
@@ -497,10 +497,10 @@ public class ResourceValidator
 			writeMessageIntoReport(INFO, path + ":");
 			
 			List<Constant> resourcePars = tagRecognizer.
-										  getConstants(Interfaces.TYPE.RESOURCE,
+										  getConstants(Interfaces.Type.RESOURCE,
 												  	   path);
 			List<Constant> propertyPars = tagRecognizer.
-										  getConstants(Interfaces.TYPE.PROPERTY,
+										  getConstants(Interfaces.Type.PROPERTY,
 												       path);
 			
 			/*

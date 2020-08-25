@@ -1,0 +1,11 @@
+{
+	"xmlFilePaths":
+	[
+		"src/test/resources/valid/xml_file1.xml",
+		"src/test/resources/valid/xml_file2.xml"
+	],
+	"interfaces":
+	[
+		
+	]
+}

@@ -1,0 +1,42 @@
+{
+	"xmlFilePaths":
+	[
+		"src/test/resources/valid/xml_file1.xml",
+		"src/test/resources/valid/xml_file2.xml"
+	],
+	"interfaces":
+	[
+		{
+			"type": "RESOURCE",
+			"allowedEqualConstants":
+			[
+				{
+					"value": 140
+				},
+				{
+					"value": 5012
+				}
+			],
+			"files":
+			[
+				["src/test/resources/valid/resource_interface1.java", "core"],
+				["src/test/resources/valid/resource_interface2.java", "railway"]
+			]
+		},
+		{
+			"type": "PROPERTY",
+			"allowedEqualConstants":
+			[
+				{
+					"names": ["PROP_ID_NAME", "PROP_ID_CODE"],
+					"value": 101
+				}
+			],
+			"files":
+			[
+			  	["src/test/resources/valid/property_interface1.java", "core"],
+				["src/test/resources/valid/property_interface2.java", "railway"]
+			]
+		}
+	]
+}

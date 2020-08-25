@@ -247,8 +247,9 @@ public class ResourceValidator
 	{
 		String errorMessage = "Константа " + a_constant.getName() +
 							  " имеет неверный префикс";
-		if (!(validateConstantPrefixForType(a_constant, Type.RESOURCE) ||
-			validateConstantPrefixForType(a_constant, Type.PROPERTY)))
+		if (!(a_constant.getName().equals(Constant.ALLOWED_NAME_WITHOUT_PREFIX) ||
+			  validateConstantPrefixForType(a_constant, Type.RESOURCE) ||
+			  validateConstantPrefixForType(a_constant, Type.PROPERTY)))
 		{
 			writeMessageIntoReport(ERROR, errorMessage);
 			return false;

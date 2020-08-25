@@ -13,6 +13,8 @@ public class Constant
 	
 	public static final String TYPE = "short";
 	
+	public static final String ALLOWED_NAME_WITHOUT_PREFIX = "ALL";
+	
 	/*
 	 * Ключ номера строки, на которой находится атрибут в xml-файле:
 	 */

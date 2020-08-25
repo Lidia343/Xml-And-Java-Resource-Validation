@@ -85,7 +85,8 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 					{
 						throw new NumberFormatException(errorMessagePart +
 														"значение константы " +
-														name + ".");
+														name + " типа " +
+														Constant.TYPE + ".");
 					}
 					if (a_interfaceId == null)
 					{

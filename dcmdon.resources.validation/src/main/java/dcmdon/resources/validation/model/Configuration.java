@@ -37,8 +37,19 @@ public class Configuration
 	 */
 	public Interfaces[] getInterfaces ()
 	{
-		Objects.requireNonNull(interfaces, "Укажите информацию об интерфейсах" +
-				  					  	    ResourceValidator.ERROR_MESSAGE_END);
+		Objects.requireNonNull(interfaces, "Укажите ключ \"Interfaces\" " +
+										   "и его значение" +
+										   ResourceValidator.ERROR_MESSAGE_END);
+		
+		if (interfaces.length < 2)
+		{
+			throw new IllegalArgumentException("Укажите информацию об интерфейсах " +
+					  						   "двух типов (" +
+					  						   Interfaces.TYPE.RESOURCE.toString().toUpperCase() +
+					  						   " и " +
+					  						   Interfaces.TYPE.PROPERTY.toString().toUpperCase() +
+					  						   ")" + ResourceValidator.ERROR_MESSAGE_END);
+		}
 		return interfaces;
 	}
 }

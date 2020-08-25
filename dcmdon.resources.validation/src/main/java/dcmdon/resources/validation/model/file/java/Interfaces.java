@@ -52,11 +52,6 @@ public class Interfaces
 	private AllowedEqualConstants[] allowedEqualConstants;
 	private Map<String, String> files;
 	
-	public void setType (TYPE a_type)
-	{
-		type = a_type;
-	}
-	
 	public TYPE getType ()
 	{
 		Objects.requireNonNull(type, "Укажите тип интерфейсов" + 
@@ -84,9 +79,15 @@ public class Interfaces
 			List<String> names = c.getNames();
 			Objects.requireNonNull(names, "Укажите имена" + errorMessagePart);
 			
+			if (names.size() == 0)
+			{
+				throw new IllegalArgumentException("Массив констант не должен " +
+												   "быть пустым.");
+			}
+			
 			String stringValue = c.getValue();
 			Objects.requireNonNull(stringValue, "Укажите значение" +
-									       errorMessagePart);
+									            errorMessagePart);
 			
 			short shortValue = -1;
 			try
@@ -107,14 +108,14 @@ public class Interfaces
 	
 	public Map<String, String> getIdByPath ()
 	{
-		String errorMessage = "Укажите пути и id интерфейсов типа " +
-							   getType() + ResourceValidator.ERROR_MESSAGE_END;
-		
-		Objects.requireNonNull(files, errorMessage);
+		Objects.requireNonNull(files, "Укажите пути и id интерфейсов типа " +
+				   					  getType() +
+				   					  ResourceValidator.ERROR_MESSAGE_END);
 		
 		if (files.size() == 0)
 		{
-			throw new IllegalArgumentException(errorMessage);
+			throw new IllegalArgumentException("Отображение путей и id интерфейсов " +
+											   "не должно быть пустым.");
 		}
 		return files;
 	}

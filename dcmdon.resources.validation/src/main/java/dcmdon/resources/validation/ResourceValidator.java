@@ -678,12 +678,6 @@ public class ResourceValidator
 	{
 		List<File> files = new ArrayList<>();
 
-		if (!a_parent.isDirectory())
-		{
-			addXmlFileToList(a_parent, files);
-			return files;
-		}
-
 		for (File f : a_parent.listFiles())
 		{
 			if (f.isDirectory())

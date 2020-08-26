@@ -29,13 +29,11 @@ public class Constant
 		
 		public String getPrefix ()
 		{
-			if (this == RESOURCE)
+			switch (this)
 			{
-				return "RES";
-			}
-			if (this == PROPERTY)
-			{
-				return "PROP";
+				case RESOURCE : return "RES";
+				
+				case PROPERTY : return "PROP";
 			}
 			return null;
 		}

@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 import dcmdon.resources.validation.model.file.Constant;
 import dcmdon.resources.validation.model.file.IConstantRecognizer;
-import dcmdon.resources.validation.model.file.java.Interfaces.Type;
+import dcmdon.resources.validation.model.file.SourceFile;
 
 /**
  * Распознаватель констант интерфейсов.
@@ -18,39 +18,14 @@ import dcmdon.resources.validation.model.file.java.Interfaces.Type;
 public class InterfaceConstantRecognizer implements IConstantRecognizer
 {
 	@Override
-	public List<Constant> getConstants(Type a_interfaceType,
-			   						   String a_interfacePath) throws
+	public List<Constant> getConstants(SourceFile a_sourceFile) throws
 									   NoSuchElementException,
 			   						   NumberFormatException, IOException
 	{
-		return getConstants(null, a_interfaceType, a_interfacePath);
-	}
-	
-	/**
-	 * Возвращает распознанные константы интерфейса типа a_interfaceType
-	 * из файла a_interfacePath.
-	 * @param @Nullable a_interfaceId
-	 * 				    Id интерфейса. Если значение равно null,
-	 * 					id будет установлено равным a_interfacePath
-	 * @param a_interfaceType
-	 * 		  Тип интерфейса
-	 * @param a_interfacePath
-	 * 		  Путь к интерфейсу
-	 * @return список констант типа short интерфейса a_interfacePath
-	 * @throws NoSuchElementException
-	 * @throws NumberFormatException
-	 * @throws IOException 
-	 */
-	public List<Constant> getConstants(String a_interfaceId,
-									   Type a_interfaceType,
-									   String a_interfacePath)
-									   throws NoSuchElementException,
-									   NumberFormatException,
-									   IOException
-	{
 		List<Constant> constants = new ArrayList<>();
 		
-		try (InputStream in = new CommentFilter(a_interfacePath).getFilteredText();
+		String interfacePath = a_sourceFile.getPath();
+		try (InputStream in = new CommentFilter(interfacePath).getFilteredText();
 			 Scanner scanner = new Scanner (in))
 		{
 			//Установка разделителей:
@@ -63,7 +38,7 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 				if (scanner.next().equals(Constant.TYPE))
 				{
 					String errorMessagePart = "В интерфейсе " +
-											  a_interfacePath +
+											  interfacePath +
 							   				  " ожидалось ";
 					
 					//Чтение имени константы:
@@ -88,16 +63,9 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 														name + " типа " +
 														Constant.TYPE + ".");
 					}
-					if (a_interfaceId == null)
-					{
-						a_interfaceId = a_interfacePath;
-					}
 					
 					//Создание объекта константы:
-					Constant constant = new Constant(a_interfaceType,
-													 name, value,
-													 a_interfacePath,
-													 a_interfaceId);
+					Constant constant = new Constant(name, value, a_sourceFile);
 					constants.add(constant);
 				}
 			}

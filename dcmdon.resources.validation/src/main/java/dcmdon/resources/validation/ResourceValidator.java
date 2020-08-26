@@ -18,9 +18,10 @@ import com.google.gson.GsonBuilder;
 
 import dcmdon.resources.validation.model.Configuration;
 import dcmdon.resources.validation.model.file.Constant;
+import dcmdon.resources.validation.model.file.Constant.Type;
 import dcmdon.resources.validation.model.file.IConstantRecognizer;
+import dcmdon.resources.validation.model.file.SourceFile;
 import dcmdon.resources.validation.model.file.java.Interfaces;
-import dcmdon.resources.validation.model.file.java.Interfaces.Type;
 import dcmdon.resources.validation.model.file.java.InterfaceConstantRecognizer;
 import dcmdon.resources.validation.model.file.xml.IdParameterRecognizer;
 
@@ -141,10 +142,13 @@ public class ResourceValidator
 			if (!writeFileExistingIntoReport(interfacePath)) continue;
 			
 			String interfaceId = idByPath.get(interfacePath);
+			
+			SourceFile source = new SourceFile(interfaceId,
+											   interfaceType,
+											   interfacePath);
+			
 			List<Constant> interfaceConstants = a_interfaceConstRecognizer.
-					                            getConstants(interfaceId,
-															interfaceType,
-															interfacePath);
+					                            getConstants(source);
 		
 			/*
 			 * Переменная для записи в неё информации о правильности
@@ -213,11 +217,11 @@ public class ResourceValidator
 				{
 					interfaceConstByName.put(name, c);
 						
-					if (interfaceType.equals(Interfaces.Type.RESOURCE))
+					if (interfaceType.equals(Type.RESOURCE))
 					{
 						m_allResourceInterfaceConstantValues.add(value);
 					}
-					if (interfaceType.equals(Interfaces.Type.PROPERTY))
+					if (interfaceType.equals(Type.PROPERTY))
 					{
 						m_allPropertyInterfaceConstantValues.add(value);
 					}
@@ -270,7 +274,7 @@ public class ResourceValidator
 	 */
 	private boolean validateConstantPrefixForType (Constant a_constant, Type a_type)
 	{
-		if (a_constant.getType() == a_type)
+		if (a_constant.getSourceFile().getType() == a_type)
 		{
 			if (a_constant.getName().startsWith(a_type.getPrefix()))
 			{
@@ -307,7 +311,7 @@ public class ResourceValidator
 		Interfaces resources = new Interfaces();
 		Interfaces properties = new Interfaces();
 		
-		if (a_interfaces[0].getType().equals(Interfaces.Type.RESOURCE))
+		if (a_interfaces[0].getType().equals(Type.RESOURCE))
 		{
 			resources = a_interfaces[0];
 			properties = a_interfaces[1];
@@ -340,10 +344,10 @@ public class ResourceValidator
 			
 			m_reportBuilder.append(System.lineSeparator());
 			writeMessageIntoReport(WARNING,	"В интерфейсах типа " +
-											Interfaces.Type.PROPERTY + 
+											Type.PROPERTY + 
 											" обнаружены пути, совпадающие " +
 											"с путями интерфейсов типа " +
-											Interfaces.Type.RESOURCE + ": " +
+											Type.RESOURCE + ": " +
 											System.lineSeparator() +
 											warnPaths.toString());
 		}
@@ -356,7 +360,7 @@ public class ResourceValidator
 				throw new IllegalArgumentException("Укажите оригинальные " +
 												   "пути к интерфейсам " +
 												   "типа " + 
-												    Interfaces.Type.PROPERTY +
+												    Type.PROPERTY +
 												    System.lineSeparator() +
 												    ERROR_MESSAGE_END);
 			}
@@ -457,10 +461,11 @@ public class ResourceValidator
 				   			  " = " + a_errorConst.getValue() +
 				   			  " равна константе " + a_equalConst.getName();
 		
-		if (!a_errorConst.getInterfacePath().equals(a_equalConst.
-													getInterfacePath()))
+		SourceFile equalConstSource = a_equalConst.getSourceFile();
+		if (!a_errorConst.getSourceFile().getPath().equals(equalConstSource.
+														   getPath()))
 		{
-			errorMessage += " (" + a_equalConst.getInterfaceId() + ")";
+			errorMessage += " (" + equalConstSource.getId() + ")";
 		}
 		writeMessageIntoReport(ERROR, errorMessage);
 	}
@@ -486,21 +491,22 @@ public class ResourceValidator
 			m_reportBuilder.append(System.lineSeparator());
 			writeMessageIntoReport(INFO, path + ":");
 			
-			List<Constant> resourcePars = tagRecognizer.
-										  getConstants(Interfaces.Type.RESOURCE,
-												  	   path);
-			List<Constant> propertyPars = tagRecognizer.
-										  getConstants(Interfaces.Type.PROPERTY,
-												       path);
+			SourceFile resourceFile = new SourceFile(Type.RESOURCE, path);
+			SourceFile propertyFile = new SourceFile(Type.PROPERTY, path);
+			
+			List<Constant> resourceAttrs = tagRecognizer.
+										   getConstants(resourceFile);
+			List<Constant> propertyAttrs = tagRecognizer.
+										   getConstants(propertyFile);
 			
 			/*
 			 * Если все параметры правильные, записывает в отчёт
 			 * сообщение об отсутствии ошибок:
 			 */
-			if (!(!checkXmlParameters(resourcePars,
+			if (!(!checkXmlParameters(resourceAttrs,
 									  m_allResourceInterfaceConstantValues) ||
-				!checkXmlParameters(propertyPars,
-									m_allPropertyInterfaceConstantValues)))
+				  !checkXmlParameters(propertyAttrs,
+									  m_allPropertyInterfaceConstantValues)))
 			{
 				writeMessageIntoReport(INFO, m_noErrMessage);
 			}
@@ -728,8 +734,8 @@ public class ResourceValidator
 			{
 				result = false;
 				writeMessageIntoReport(ERROR, "Строка: " + par.getLineNumber() +
-									   ". Тег: " + par.getType() + ". " +
-									   par.getName() + " = " + value +
+									   ". Тег: " + par.getSourceFile().getType() +
+									   ". " + par.getName() + " = " + value +
 									   ". Параметр не найден в значениях " +
 									   "констант соответствующих интерфейсов.");
 			}

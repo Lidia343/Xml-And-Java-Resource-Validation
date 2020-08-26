@@ -8,46 +8,13 @@ import java.util.Objects;
 import dcmdon.resources.validation.ResourceValidator;
 import dcmdon.resources.validation.model.Configuration;
 import dcmdon.resources.validation.model.file.Constant;
+import dcmdon.resources.validation.model.file.Constant.Type;
 
 /**
  * Интерфейсы для проверки.
  */
 public class Interfaces
 {
-	public enum Type
-	{
-		RESOURCE
-		{
-			@Override
-			public String toString ()
-			{
-				return "Resource";
-			}
-		},
-		
-		PROPERTY
-		{
-			@Override
-			public String toString ()
-			{
-				return "Property";
-			}
-		};
-		
-		public String getPrefix ()
-		{
-			if (this == RESOURCE)
-			{
-				return "RES";
-			}
-			if (this == PROPERTY)
-			{
-				return "PROP";
-			}
-			return null;
-		}
-	}
-	
 	private Type type;
 	private AllowedEqualConstants[] allowedEqualConstants;
 	private Map<String, String> files;

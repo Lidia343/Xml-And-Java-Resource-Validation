@@ -18,7 +18,7 @@ import org.xml.sax.SAXException;
 
 import dcmdon.resources.validation.model.file.Constant;
 import dcmdon.resources.validation.model.file.IConstantRecognizer;
-import dcmdon.resources.validation.model.file.java.Interfaces.Type;
+import dcmdon.resources.validation.model.file.SourceFile;
 
 /**
  * Распознаватель параметров атрибутов Id тегов Resource
@@ -42,19 +42,11 @@ public class IdParameterRecognizer implements IConstantRecognizer
 	}
 	
 	/**
-	 * Возвращает список атрибутов Id тегов a_constantType
-	 * файла a_xmlFilePath.
-	 * @param a_constantType
-	 * 		  Имя тега
-	 * @param a_xmlFilePath
-	 * 		  Путь к xml-файлу с атрибутами
-	 * @return распознанные атрибуты
+	 * Возвращает список атрибутов Id из файла a_sourceFile.
 	 */
 	@Override
-	public List<Constant> getConstants(Type a_constantType,
-									   String a_xmlFilePath)
-									   throws SAXException,
-											  IOException,
+	public List<Constant> getConstants(SourceFile a_sourceFile)
+									   throws SAXException, IOException,
 											  ParserConfigurationException
 	{
 		Document document = m_docBuilder.newDocument();
@@ -62,11 +54,12 @@ public class IdParameterRecognizer implements IConstantRecognizer
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 	    SAXParser parser = factory.newSAXParser();
 		XMLHandler handler = new XMLHandler(document);
-	    parser.parse(new File(a_xmlFilePath), handler);
+	    parser.parse(new File(a_sourceFile.getPath()), handler);
 	     
-	    //Список тегов a_constantType:
+	    //Список тегов a_sourceFile.getType():
 		NodeList tags = document.getDocumentElement().
-								 getElementsByTagName(a_constantType.toString());
+								 getElementsByTagName(a_sourceFile.getType().
+										 			               toString());
 		
 		List<Constant> attributes = new ArrayList<>();
 		for (int i = 0; i < tags.getLength(); i++)
@@ -75,7 +68,7 @@ public class IdParameterRecognizer implements IConstantRecognizer
 			
 			int lineNumber = Integer.parseInt((String)tag.getUserData(
 											  Constant.DATA_LINE_NUMBER));
-			String name = Constant.NAME_ID;
+			String name = Constant.XML_TAG_ATTRIBUTE;
 			short value = -1;
 			
 			try
@@ -95,7 +88,7 @@ public class IdParameterRecognizer implements IConstantRecognizer
 			}
 			
 			//Создание объекта константы:
-			Constant attribute = new Constant(a_constantType, name, value,
+			Constant attribute = new Constant(name, value, a_sourceFile,
 											  lineNumber);
 			attributes.add(attribute);
 		}

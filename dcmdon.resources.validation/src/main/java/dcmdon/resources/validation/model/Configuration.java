@@ -3,6 +3,7 @@ package dcmdon.resources.validation.model;
 import java.util.Objects;
 
 import dcmdon.resources.validation.ResourceValidator;
+import dcmdon.resources.validation.model.file.Constant;
 import dcmdon.resources.validation.model.file.java.Interfaces;
 
 /**
@@ -45,9 +46,9 @@ public class Configuration
 		{
 			throw new IllegalArgumentException("Укажите информацию об интерфейсах " +
 					  						   "двух типов (" +
-					  						   Interfaces.Type.RESOURCE.toString().toUpperCase() +
+					  						   Constant.Type.RESOURCE.toString().toUpperCase() +
 					  						   " и " +
-					  						   Interfaces.Type.PROPERTY.toString().toUpperCase() +
+					  						   Constant.Type.PROPERTY.toString().toUpperCase() +
 					  						   ")" + ResourceValidator.ERROR_MESSAGE_END);
 		}
 		return interfaces;

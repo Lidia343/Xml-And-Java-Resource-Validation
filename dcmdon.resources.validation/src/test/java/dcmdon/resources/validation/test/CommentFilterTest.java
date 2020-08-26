@@ -31,7 +31,7 @@ public class CommentFilterTest
 		String textWithoutComments = Util.getText(m_fileWithoutComments);
 		
 		String filteredText = new CommentFilter().getFilteredText(textWithComments);
-		System.out.println(filteredText);
+		//System.out.println(filteredText);
 		assertEquals(filteredText, textWithoutComments);
 	}
 }

@@ -34,8 +34,9 @@ public class Constant
 				case RESOURCE : return "RES";
 				
 				case PROPERTY : return "PROP";
+				
+				default : return null;
 			}
-			return null;
 		}
 	}
 

@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.Test;
 
 import dcmdon.resources.validation.ResourceValidator;
+import dcmdon.resources.validation.model.ConfigurationReader;
 
 /**
  * Класс для общего теста программы
@@ -122,7 +123,7 @@ public class ResourceValidatorTest
 			 a_messagesForEqual);
 	}
 	
-	private void test (String a_filePath, int a_codeForEqual,
+	private void test (String a_configFilePath, int a_codeForEqual,
 					   String... a_messagesForEqual)
 	{
 		List<String> messages = null;
@@ -132,7 +133,10 @@ public class ResourceValidatorTest
 		}
 		try
 		{
-			ResourceValidator validator = new ResourceValidator(a_filePath);
+			ResourceValidator validator = new ResourceValidator(
+					  					  new ConfigurationReader().
+					  					  read(a_configFilePath));
+			
 			String report = validator.validateAndGetReport();
 			assertEquals(validator.getValidationResultCode(), a_codeForEqual);
 			

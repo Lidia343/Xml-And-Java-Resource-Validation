@@ -2,9 +2,7 @@ package dcmdon.resources.validation;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,9 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import dcmdon.resources.validation.model.Configuration;
 import dcmdon.resources.validation.model.file.Constant;
@@ -49,8 +44,6 @@ public class ResourceValidator
 	
 	private final String m_fileNotFoundMessage = "Файл не найден.";
 	
-	private String m_configFilePath;
-	
 	private Configuration m_configuration;
 	
 	private StringBuilder m_reportBuilder;
@@ -61,15 +54,14 @@ public class ResourceValidator
 	private List<Short>  m_allPropertyInterfaceConstantValues = new ArrayList<>();
 	
 	/**
-	 * @param a_configFilePath
-	 * 		  Путь к конфигурационному файлу
-	 * 		  (содержимое файла должно
-	 * 		  соответствовать формату JSON)
+	 * Конструктор класса ResourceValidator.
+	 * @param a_configuration
+	 * 		  Объект конфигурации
 	 */
-	public ResourceValidator (String a_configFilePath)
+	public ResourceValidator (Configuration a_configuration)
 	{
-		 m_configFilePath = Objects.requireNonNull(a_configFilePath, "Путь к " +
-				 			"файлу конфигурации не должен быть равен null.");
+		 m_configuration = Objects.requireNonNull(a_configuration,
+				 		   "Объект конфигурации не должен быть равен null.");
 	}
 	
 	/**
@@ -80,7 +72,6 @@ public class ResourceValidator
 	private void validateAllResources () throws Exception
 	{
 		m_reportBuilder = new StringBuilder();
-		m_configuration = readConfiguration();
 		validateInterfaces();
 		validateXmlFiles();
 	}
@@ -367,22 +358,6 @@ public class ResourceValidator
 		}
 		
 		return a_interfaces;
-	}
-	
-	/**
-	 * Считывает файл конфигурации.
-	 * @return объект класса Configuration, который
-	 * содержит пути к xml-файлам и информацию об
-	 * интерфейсах для проверки
-	 * @throws IOException
-	 */
-	private Configuration readConfiguration () throws IOException
-	{
-		try (Reader reader = new FileReader (m_configFilePath))
-		{
-			Gson gson = new GsonBuilder().create();
-			return gson.fromJson(reader, Configuration.class);
-		}
 	}
 		
 	/**

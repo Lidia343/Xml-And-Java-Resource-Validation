@@ -1,6 +1,7 @@
 package dcmdon.resources.validation.main;
 
 import dcmdon.resources.validation.ResourceValidator;
+import dcmdon.resources.validation.model.ConfigurationReader;
 
 /**
  * Главный класс приложения. Запускает проверку
@@ -40,7 +41,10 @@ public class Main
 			
 			String configFilePath = a_args[0];
 			
-			ResourceValidator validator = new ResourceValidator(configFilePath);
+			ResourceValidator validator = new ResourceValidator(
+										  new ConfigurationReader().
+										  read(configFilePath));
+			
 			System.out.print(validator.validateAndGetReport() +
 									   System.lineSeparator());
 			if (validator.getValidationResultCode() ==

@@ -12,6 +12,10 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import dcmdon.resources.validation.model.Configuration;
+import dcmdon.resources.validation.model.TxtReport;
+import dcmdon.resources.validation.model.ValidationReport;
+import dcmdon.resources.validation.model.ValidationResult;
+import dcmdon.resources.validation.model.ValidationResult.Key;
 import dcmdon.resources.validation.model.file.Constant;
 import dcmdon.resources.validation.model.file.Constant.Type;
 import dcmdon.resources.validation.model.file.IConstantRecognizer;
@@ -31,24 +35,19 @@ import dcmdon.resources.validation.model.file.xml.IdParameterRecognizer;
  */
 public class ResourceValidator
 {
-	public static final int OK_RESULT_CODE = 0;
-	public static final int ERROR_RESULT_CODE = 1;
+	public static final String CONFIG_MESSAGE_END = " в конфигурационном файле.";
 	
-	public static final String INFO = "[INFO]\t";
-	public static final String WARNING = "[WARN]\t";
-	public static final String ERROR = "[ERR!]\t";
-	
-	public static final String ERROR_MESSAGE_END = " в конфигурационном файле.";
-	
-	private final String m_noErrMessage = "Ошибки не обнаружены.";
+	private final String m_successMessage = "Ошибки не обнаружены.";
 	
 	private final String m_fileNotFoundMessage = "Файл не найден.";
 	
 	private Configuration m_configuration;
 	
-	private StringBuilder m_reportBuilder;
+	private ValidationResult m_valResultRoot;
 	
-	private int m_resultCode = OK_RESULT_CODE;
+	private ValidationResult m_currentValResult;
+	
+	private ValidationReport m_report;
 	
 	private List<Short> m_allResourceInterfaceConstantValues = new ArrayList<>();
 	private List<Short>  m_allPropertyInterfaceConstantValues = new ArrayList<>();
@@ -71,7 +70,8 @@ public class ResourceValidator
 	 */
 	private void validateAllResources () throws Exception
 	{
-		m_reportBuilder = new StringBuilder();
+		m_valResultRoot = new ValidationResult(Key.INITIAL_INFORMATION,
+							  "Отчёт о проверке интерфейсов и xml-файлов");
 		validateInterfaces();
 		validateXmlFiles();
 	}
@@ -129,8 +129,13 @@ public class ResourceValidator
 		
 		for (String interfacePath : idByPath.keySet())
 		{
-			m_reportBuilder.append(System.lineSeparator());
-			if (!writeFileExistingIntoReport(interfacePath)) continue;
+			ValidationResult interfaceValResult = getFileExistingResult(interfacePath);
+			
+			if (interfaceValResult.getResultType() ==
+				ValidationResult.Type.ERROR)
+			{
+				continue;
+			}
 			
 			String interfaceId = idByPath.get(interfacePath);
 			
@@ -155,7 +160,7 @@ public class ResourceValidator
 			
 			for (Constant c : interfaceConstants)
 			{
-				if (!validateConstantPrefix(c))
+				if (!validateConstantPrefix(interfaceValResult, c))
 				{
 					errorsExist = true;
 				}
@@ -187,14 +192,16 @@ public class ResourceValidator
 							{
 								validConstant = false;
 								errorsExist = true;
-								writeErrorConstIntoReport(c, entryConst);
+								addEqualConstResult(interfaceValResult, c,
+													entryConst);
 							}
 						}
 						else
 						{
 							validConstant = false;
 							errorsExist = true;
-							writeErrorConstIntoReport(c, entryConst);
+							addEqualConstResult(interfaceValResult, c,
+												entryConst);
 						}
 					}
 				}
@@ -223,7 +230,7 @@ public class ResourceValidator
 			 * Если при проверке интерфейса не было найдено ошибок,
 			 * в отчёт записывается соответствующее сообщение:
 			 */
-			if (!errorsExist) writeMessageIntoReport(INFO, m_noErrMessage);
+			if (!errorsExist) new ValidationResult(interfaceValResult, Key.SUCCESS, m_successMessage);
 		}
 	}
 	
@@ -237,15 +244,15 @@ public class ResourceValidator
 	 * @return true - если префикс константы
 	 * соответствует её типу, false - иначе.
 	 */
-	private boolean validateConstantPrefix (Constant a_constant)
+	private boolean validateConstantPrefix (ValidationResult a_parentForErrResult, Constant a_constant)
 	{
-		String errorMessage = "Константа " + a_constant.getName() +
-							  " имеет неверный префикс";
 		if (!(a_constant.getName().equals(Constant.ALLOWED_NAME_WITHOUT_PREFIX) ||
 			  validateConstantPrefixForType(a_constant, Type.RESOURCE) ||
 			  validateConstantPrefixForType(a_constant, Type.PROPERTY)))
 		{
-			writeMessageIntoReport(ERROR, errorMessage);
+			new ValidationResult(a_parentForErrResult, Key.INVALID_CONST_PREFIX,
+								 "Константа " + a_constant.getName() +
+								 " имеет неверный префикс");
 			return false;
 		}
 		return true;
@@ -282,8 +289,8 @@ public class ResourceValidator
 	 */
 	private Interfaces[] getInterfacesForValidation ()
 	{
-		m_reportBuilder.append(System.lineSeparator());
-		writeMessageIntoReport(INFO, "Проверка интерфейсов...");
+		m_currentValResult = new ValidationResult(m_valResultRoot, Key.INITIAL_INFORMATION,
+						     "Проверка интерфейсов...");
 		return removeEqualInterfacePaths(m_configuration.getInterfaces());
 	}
 	
@@ -313,8 +320,7 @@ public class ResourceValidator
 			properties = a_interfaces[0];
 		}
 		
-		List<String> pathsForRemoving = new ArrayList<>();
-		StringBuilder warnPaths = new StringBuilder();
+		List<String> pathsForRemoving = new ArrayList<>();////////////////////////
 		Map<String, String> propIdByPath = properties.getIdByPath();
 		for (String resPath : resources.getIdByPath().keySet())
 		{
@@ -323,28 +329,26 @@ public class ResourceValidator
 				if (propPath.equals(resPath))
 				{
 					pathsForRemoving.add(propPath);
-					warnPaths.append(WARNING + propPath + System.lineSeparator());
 				}
 			}
 		}
 		
+		ValidationResult equalPathValResult = null;
 		if (pathsForRemoving.size() != 0)
 		{
-			//Удаление последнего перехода на новую строку:
-			warnPaths.delete(warnPaths.length() - 2, warnPaths.length());
-			
-			m_reportBuilder.append(System.lineSeparator());
-			writeMessageIntoReport(WARNING,	"В интерфейсах типа " +
-											Type.PROPERTY + 
-											" обнаружены пути, совпадающие " +
-											"с путями интерфейсов типа " +
-											Type.RESOURCE + ": " +
-											System.lineSeparator() +
-											warnPaths.toString());
+			equalPathValResult = new ValidationResult(m_currentValResult,
+									 Key.SOME_EQUAL_INTERFACE_PATHS,
+									 "В интерфейсах типа " + Type.PROPERTY + 
+									 " обнаружены пути, совпадающие " +
+									 "с путями интерфейсов типа " +
+									 Type.RESOURCE + ":");
 		}
 		
 		for (String path : pathsForRemoving)
 		{
+			new ValidationResult(equalPathValResult, Key.FILE_PATH, path).
+			 					 changeResultType(ValidationResult.Type.WARNING);
+			
 			propIdByPath.remove(path);
 			if (propIdByPath.size() == 0)
 			{
@@ -353,7 +357,7 @@ public class ResourceValidator
 												   "типа " + 
 												    Type.PROPERTY +
 												    System.lineSeparator() +
-												    ERROR_MESSAGE_END);
+												    CONFIG_MESSAGE_END);
 			}
 		}
 		
@@ -369,22 +373,25 @@ public class ResourceValidator
 	 * @return true - если файл существует, false -
 	 * иначе
 	 */
-	private boolean writeFileExistingIntoReport (String a_filePath)
+	private ValidationResult getFileExistingResult (String a_filePath)
 	{
-		writeMessageIntoReport(INFO, a_filePath + ":");
+		ValidationResult result = new ValidationResult(m_currentValResult,
+							      Key.FILE_PATH, a_filePath);
+		result.changeResultType(ValidationResult.Type.INFO);
+		
 		File javaFile = new File(a_filePath);
 		if (!javaFile.exists())
 		{
-			writeMessageIntoReport(ERROR, m_fileNotFoundMessage);
-			return false;
+			return new ValidationResult(result, Key.FILE_NON_EXISTING,
+										m_fileNotFoundMessage);
 		}
 		if (javaFile.isDirectory())
 		{
-			writeMessageIntoReport(ERROR, "Укажите путь к файлу интерфейса, " +
-										  "а не к директориии");
-			return false;
+			return new ValidationResult(result, Key.NEED_FOR_INTERFACE_PATH,
+										"Укажите путь к файлу интерфейса, " +
+					  					"а не к директориии");
 		}
-		return true;
+		return result;
 	}
 	
 	/**
@@ -397,25 +404,12 @@ public class ResourceValidator
 	{
 		if (!a_file.exists())
 		{
-			writeMessageIntoReport(INFO, a_file.getAbsolutePath() + ":");
-			writeMessageIntoReport(ERROR, m_fileNotFoundMessage);
+			ValidationResult fileRes = new ValidationResult(m_currentValResult,
+									   Key.FILE_PATH, a_file.getAbsolutePath());
+			fileRes.changeResultType(ValidationResult.Type.INFO);
+			new ValidationResult(fileRes, Key.FILE_NON_EXISTING,
+								 m_fileNotFoundMessage);
 		}
-	}
-	
-	/**
-	 * Записывает сообщение в отчёт. Если a_prefix равен
-	 * ResourceValidator.ERROR, коду результата общей
-	 * проверки присваивается значение, соответствующее
-	 * ошибке (ResourceValidator.ERROR_RESULT_CODE).
-	 * @param a_prefix
-	 * 		  Префикс сообщения
-	 * @param a_message
-	 * 		  Сообщение
-	 */
-	private void writeMessageIntoReport (String a_prefix, String a_message)
-	{
-		if (a_prefix.equals(ERROR)) m_resultCode = ERROR_RESULT_CODE;
-		m_reportBuilder.append(a_prefix + a_message + System.lineSeparator());
 	}
 	
 	/**
@@ -429,20 +423,21 @@ public class ResourceValidator
 	 * @param a_equalConst
 	 * 		  Правильная константа
 	 */
-	private void writeErrorConstIntoReport (Constant a_errorConst,
-											Constant a_equalConst)
+	private void addEqualConstResult (ValidationResult a_parent,
+									  Constant a_invalidConst,
+									  Constant a_equalConst)
 	{
-		String errorMessage = "Константа " + a_errorConst.getName() +
-				   			  " = " + a_errorConst.getValue() +
+		String errorMessage = "Константа " + a_invalidConst.getName() +
+				   			  " = " + a_invalidConst.getValue() +
 				   			  " равна константе " + a_equalConst.getName();
 		
 		SourceFile equalConstSource = a_equalConst.getSourceFile();
-		if (!a_errorConst.getSourceFile().getPath().equals(equalConstSource.
-														   getPath()))
+		if (!a_invalidConst.getSourceFile().getPath().equals(equalConstSource.
+														     getPath()))
 		{
 			errorMessage += " (" + equalConstSource.getId() + ")";
 		}
-		writeMessageIntoReport(ERROR, errorMessage);
+		new ValidationResult(a_parent, Key.EQUAL_INTERFACE_CONSTS, errorMessage);
 	}
 	
 	/**
@@ -451,20 +446,26 @@ public class ResourceValidator
 	 */
 	private void validateXmlFiles () throws Exception
 	{
+		m_currentValResult = new ValidationResult(m_valResultRoot,
+												  Key.INITIAL_INFORMATION,
+												  "Проверка xml-файлов...");
+		
 		IConstantRecognizer tagRecognizer = new IdParameterRecognizer();
 		
 		List<File> xmlFilesForValidation = getXmlFilesForValidation();
 		if (xmlFilesForValidation.size() == 0)
 		{
-			writeMessageIntoReport(WARNING, "Не указаны файлы для проверки" +
-											 ERROR_MESSAGE_END);
+			new ValidationResult(m_currentValResult, Key.NEED_FOR_XML_FILES,
+								 "Не указаны файлы для проверки" +
+								 CONFIG_MESSAGE_END);
 		}
 		for (File xmlFile : xmlFilesForValidation)
 		{
 			String path = xmlFile.getAbsolutePath();
 			
-			m_reportBuilder.append(System.lineSeparator());
-			writeMessageIntoReport(INFO, path + ":");
+			ValidationResult xmlFileRes = new ValidationResult(m_currentValResult,
+												 	  		   Key.FILE_PATH, path);
+			xmlFileRes.changeResultType(ValidationResult.Type.INFO);
 			
 			SourceFile resourceFile = new SourceFile(Type.RESOURCE, path);
 			SourceFile propertyFile = new SourceFile(Type.PROPERTY, path);
@@ -478,12 +479,12 @@ public class ResourceValidator
 			 * Если все параметры правильные, записывает в отчёт
 			 * сообщение об отсутствии ошибок:
 			 */
-			if (!(!checkXmlParameters(resourceAttrs,
+			if (!(!checkXmlParameters(xmlFileRes, resourceAttrs,
 									  m_allResourceInterfaceConstantValues) ||
-				  !checkXmlParameters(propertyAttrs,
+				  !checkXmlParameters(xmlFileRes, propertyAttrs,
 									  m_allPropertyInterfaceConstantValues)))
 			{
-				writeMessageIntoReport(INFO, m_noErrMessage);
+				new ValidationResult(xmlFileRes, Key.SUCCESS, m_successMessage);
 			}
 		}
 	}
@@ -494,9 +495,6 @@ public class ResourceValidator
 	 */
 	private List<File> getXmlFilesForValidation () throws IOException
 	{
-		m_reportBuilder.append(System.lineSeparator());
-		writeMessageIntoReport(INFO, "Проверка xml-файлов...");
-		
 		List<File> result = new ArrayList<>();
 		
 		List<File> uniqueXmlFiles =
@@ -524,10 +522,19 @@ public class ResourceValidator
 	 * списке не присутствуют избыточные файлы и
 	 * директории
 	 */
-	private List<File> getUniqueXmlFilesForValidation (String[] a_xmlFilePaths)
+	private List<File> getUniqueXmlFilesForValidation (List<String> a_xmlFilePaths)
 	{
+		List<String> paths = new ArrayList<>();
+		for (String path : a_xmlFilePaths)
+		{
+			if (!paths.contains(path))
+			{
+				paths.add(path);
+			}
+		}
+		
 		List<File> result = new ArrayList<>();
-		addXmlFilesToList(result, a_xmlFilePaths);
+		addXmlFilesToList(result, paths);
 		removeFilesWithRedundantPaths(result);
 		return result;
 	}
@@ -561,7 +568,7 @@ public class ResourceValidator
 	 * 		  Пути к файлам
 	 */
 	private void addXmlFilesToList (List<File> a_result,
-									String[] a_xmlFilePaths)
+									List<String> a_xmlFilePaths)
 	{
 		for (String path : a_xmlFilePaths)
 		{
@@ -698,7 +705,7 @@ public class ResourceValidator
 	 * списка a_xmlAttributes содержатся в списке
 	 * a_interfaceConstantValues, false - иначе
 	 */
-	private boolean checkXmlParameters (List<Constant> a_xmlAttributes,
+	private boolean checkXmlParameters (ValidationResult a_parentForErrResult, List<Constant> a_xmlAttributes,
 									    List<Short> a_interfaceConstantValues)
 	{
 		boolean result = true;
@@ -708,11 +715,13 @@ public class ResourceValidator
 			if (!a_interfaceConstantValues.contains(value))
 			{
 				result = false;
-				writeMessageIntoReport(ERROR, "Строка: " + par.getLineNumber() +
-									   ". Тег: " + par.getSourceFile().getType() +
-									   ". " + par.getName() + " = " + value +
-									   ". Параметр не найден в значениях " +
-									   "констант соответствующих интерфейсов.");
+				new ValidationResult(a_parentForErrResult,
+									 Key.INVALID_XML_ATTRIBUTE_PARAMETER,
+									 "Строка: " + par.getLineNumber() +
+									 ". Тег: " + par.getSourceFile().getType() +
+									 ". " + par.getName() + " = " + value +
+									 ". Параметр не найден в значениях " +
+									 "констант соответствующих интерфейсов.");
 			}
 		}
 		return result;
@@ -731,10 +740,11 @@ public class ResourceValidator
 	 * @return отчёт о результате проверки
 	 * @throws Exception
 	 */
-	public String validateAndGetReport () throws Exception
+	public ValidationReport validateAndGetReport () throws Exception
 	{
 		validateAllResources();
-		return m_reportBuilder.toString();
+		m_report = new TxtReport(m_valResultRoot);
+		return m_report;
 	}
 	
 	/**
@@ -746,6 +756,10 @@ public class ResourceValidator
 	 */
 	public int getValidationResultCode ()
 	{
-		return m_resultCode;
+		if (m_report == null)
+		{
+			return -1;
+		}
+		return m_report.getValidationResultCode();
 	}
 }

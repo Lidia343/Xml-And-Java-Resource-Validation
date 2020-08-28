@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import dcmdon.resources.validation.ResourceValidator;
 import dcmdon.resources.validation.model.ConfigurationReader;
+import dcmdon.resources.validation.model.ValidationResult;
 
 /**
  * Класс для общего теста программы
@@ -101,7 +102,7 @@ public class ResourceValidatorTest
 	@Test
 	public void testValidResources()
 	{
-		test(m_validConfig, ResourceValidator.OK_RESULT_CODE, (String[])null);
+		test(m_validConfig, ValidationResult.Code.OK.getValue(), (String[])null);
 	}
 	
 	/**
@@ -119,7 +120,7 @@ public class ResourceValidatorTest
 	private void testInvalidResources (String a_configFilePath,
 									   String... a_messagesForEqual)
 	{
-		test(a_configFilePath, ResourceValidator.ERROR_RESULT_CODE,
+		test(a_configFilePath, ValidationResult.Code.ERROR.getValue(),
 			 a_messagesForEqual);
 	}
 	
@@ -137,7 +138,7 @@ public class ResourceValidatorTest
 					  					  new ConfigurationReader().
 					  					  read(a_configFilePath));
 			
-			String report = validator.validateAndGetReport();
+			String report = validator.validateAndGetReport().getText();
 			assertEquals(validator.getValidationResultCode(), a_codeForEqual);
 			
 			if (messages == null) return;
@@ -209,11 +210,11 @@ public class ResourceValidatorTest
 		testInvalidResources(m_nonUniqueInterfacePathsConfig,
 							 "оригинальные пути к интерфейсам");
 		
-		test(m_emptyXmlFileListConfig, ResourceValidator.OK_RESULT_CODE,
+		test(m_emptyXmlFileListConfig, ValidationResult.Code.OK.getValue(),
 			 "Не указаны файлы для проверки");
 		
 		String fileNonExisting = ":" + System.lineSeparator() +
-						     	 ResourceValidator.ERROR + "Файл не найден";
+								ValidationResult.Code.ERROR.getValue() + "Файл не найден";
 		
 		testInvalidResources(m_baseInvalidConfig, m_nonExistXmlFile +
 							 fileNonExisting, m_nonExistInterfaceFile +

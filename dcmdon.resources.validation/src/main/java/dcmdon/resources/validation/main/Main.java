@@ -2,6 +2,7 @@ package dcmdon.resources.validation.main;
 
 import dcmdon.resources.validation.ResourceValidator;
 import dcmdon.resources.validation.model.ConfigurationReader;
+import dcmdon.resources.validation.model.ValidationResult;
 
 /**
  * Главный класс приложения. Запускает проверку
@@ -36,7 +37,7 @@ public class Main
 			if (a_args.length == 0)
 			{
 				System.out.println(HELP_MESSAGE);
-				System.exit(ResourceValidator.ERROR_RESULT_CODE);
+				System.exit(ValidationResult.Code.ERROR.getValue());
 			}
 			
 			String configFilePath = a_args[0];
@@ -45,12 +46,12 @@ public class Main
 										  new ConfigurationReader().
 										  read(configFilePath));
 			
-			System.out.print(validator.validateAndGetReport() +
+			System.out.print(validator.validateAndGetReport().getText() +
 									   System.lineSeparator());
 			if (validator.getValidationResultCode() ==
-				ResourceValidator.ERROR_RESULT_CODE)
+					ValidationResult.Code.ERROR.getValue())
 			{
-				System.exit(ResourceValidator.ERROR_RESULT_CODE);
+				System.exit(ValidationResult.Code.ERROR.getValue());
 			}
 		}
 		catch (Exception e)
@@ -65,7 +66,7 @@ public class Main
 			{
 				e.printStackTrace();
 			}
-			System.exit(ResourceValidator.ERROR_RESULT_CODE);
+			System.exit(ValidationResult.Code.ERROR.getValue());
 		}
 	}
 }

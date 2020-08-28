@@ -217,12 +217,11 @@ public class ValidationResult
 	{
 		if (m_postFix == null)
 		{
-			switch(m_resultType)
+			if(m_resultType == Type.INFO && m_key == Key.FILE_PATH)
 			{
-				case INFO : return ":";
-				
-				default : return "";
+				return ":";
 			}
+			else return "";
 		}
 		return m_postFix;
 	}

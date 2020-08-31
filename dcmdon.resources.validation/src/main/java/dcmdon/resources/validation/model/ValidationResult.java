@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Единичный результат проверки.
+ */
 public class ValidationResult
 {
 	public enum Code
@@ -83,6 +86,16 @@ public class ValidationResult
 	
 	private List<ValidationResult> m_entries = new ArrayList<>();
 	
+	/**
+	 * Конструктор класса ValidationResult.
+	 * @param a_parent
+	 * 		  Родительский узел для добавления
+	 * 		  к нему данного результата
+	 * @param a_key
+	 * 		  Ключ результата проверки
+	 * @param a_value
+	 * 		  Значение результата проверки
+	 */
 	public ValidationResult (ValidationResult a_parent, Key a_key, String a_value)
 	{
 		m_key = Objects.requireNonNull(a_key);
@@ -92,52 +105,94 @@ public class ValidationResult
 		m_parent = a_parent;
 		if (m_parent != null)
 		{
-			m_parent.addEntry(this);
+			m_parent.addNode(this);
 			m_root = m_parent.getRoot();
 		}
 	}
 	
+	/**
+	 * Конструктор класса ValidationResult.
+	 * Создаёт корень дерева результатов
+	 * проверки.
+	 * @param a_key
+	 * 		  Ключ результата проверки
+	 * @param a_value
+	 * 		  Значение результата проверки
+	 */
 	public ValidationResult (Key a_key, String a_value)
 	{
 		this(null, a_key, a_value);
 		m_root = this;
 	}
 	
+	/**
+	 * @return корень дерева, в которое
+	 * входит данный объект.
+	 * Возвращает данный объект, если он
+	 * является корнем.
+	 */
 	public ValidationResult getRoot ()
 	{
 		return m_root;
 	}
 	
+	/**
+	 * @return true - если данный объект
+	 * является корнем, false - иначе
+	 */
 	public boolean isRoot ()
 	{
 		return this == m_root ? true : false;
 	}
 	
+	/**
+	 * @return родительский узел данного
+	 * объекта
+	 */
 	public ValidationResult getParent ()
 	{
 		return m_parent;
 	}
 	
+	/**
+	 * @return ключ результата проверки
+	 */
 	public Key getKey ()
 	{
 		return m_key;
 	}
 	
+	/**
+	 * @return значение результата проверки
+	 */
 	public String getValue ()
 	{
 		return m_value;
 	}
 	
+	/**
+	 * @return тип результата проверки
+	 */
 	public Type getResultType ()
 	{
 		return m_resultType;
 	}
 	
+	/**
+	 * @return код результата проверки
+	 */
 	public Code getCode ()
 	{
 		return m_code;
 	}
 	
+	/**
+	 * @return общий код результата проверки
+	 * для дерева, включающего данный объект.
+	 * Если хотя бы один узел дерева имеет
+	 * код Code.ERROR, возвращает Code.ERROR,
+	 * иначе - Code.OK
+	 */
 	public Code getGenaralCode ()
 	{
 		if (m_root != null)
@@ -151,12 +206,25 @@ public class ValidationResult
 		return getGeneralCode(this);
 	}
 	
+	/**
+	 * @return общий код результата проверки
+	 * для дерева, корнем которого является
+	 * a_result.
+	 * Если хотя бы один узел дерева имеет
+	 * код Code.ERROR, возвращает Code.ERROR,
+	 * иначе - Code.OK
+	 */
 	private Code getGeneralCode (ValidationResult a_result)
 	{
-		List<ValidationResult> entries = a_result.getEntries();
-		for (ValidationResult result : entries)
+		if (a_result.getCode() == Code.ERROR)
 		{
-			if (getGeneralCode(result) == Code.ERROR)
+			return Code.ERROR;
+		}
+		
+		List<ValidationResult> entries = a_result.getNodes();
+		for (ValidationResult entry : entries)
+		{
+			if (getGeneralCode(entry) == Code.ERROR)
 			{
 				return Code.ERROR;
 			}
@@ -164,16 +232,28 @@ public class ValidationResult
 		return Code.OK;
 	}
 	
-	public List<ValidationResult> getEntries ()
+	/**
+	 * @return узлы данного объекта
+	 */
+	public List<ValidationResult> getNodes ()
 	{
 		return m_entries;
 	}
 	
+	/**
+	 * @param a_prefix
+	 * 		  Префикс сообщения результата
+	 * 		  проверки
+	 */
 	public void setPrefix (String a_prefix)
 	{
 		m_prefix = Objects.requireNonNull(a_prefix);
 	}
 	
+	/**
+	 * @return префикс сообщения результата
+	 * проверки
+	 */
 	public String getPrefix ()
 	{
 		if (m_prefix == null)
@@ -192,11 +272,21 @@ public class ValidationResult
 		return m_prefix;
 	}
 	
+	/**
+	 * @return true - если тип результата проверки
+	 * равен Type.UNKNOWN, false - иначе
+	 */
 	public boolean needsChangeResultType ()
 	{
 		return m_resultType == Type.UNKNOWN ? true : false;
 	}
 	
+	/**
+	 * @param a_type
+	 * 		  Новый тип результата проверки
+	 * @return true - если тип был изменён,
+	 * false - иначе
+	 */
 	public boolean changeResultType (Type a_type)
 	{
 		if (needsChangeResultType() && a_type != Type.UNKNOWN)
@@ -208,11 +298,20 @@ public class ValidationResult
 		return false;
 	}
 	
+	/**
+	 * @param a_postfix
+	 * 		  Постфикс сообщения результата
+	 * 		  проверки
+	 */
 	public void setPostfix (String a_postfix)
 	{
 		m_postFix = Objects.requireNonNull(a_postfix);
 	}
 	
+	/**
+	 * @return постфикс сообщения результата
+	 * проверки
+	 */
 	public String getPostfix ()
 	{
 		if (m_postFix == null)
@@ -226,7 +325,13 @@ public class ValidationResult
 		return m_postFix;
 	}
 	
-	private void addEntry (ValidationResult a_entry)
+	/**
+	 * Добавляет узел к данному результату
+	 * проверки.
+	 * @param a_entry
+	 * 		  Узел для добавления
+	 */
+	private void addNode (ValidationResult a_entry)
 	{
 		m_entries.add(a_entry);
 	}

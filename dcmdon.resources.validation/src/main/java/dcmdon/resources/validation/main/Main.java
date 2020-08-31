@@ -1,8 +1,8 @@
 package dcmdon.resources.validation.main;
 
 import dcmdon.resources.validation.ResourceValidator;
-import dcmdon.resources.validation.model.ConfigurationReader;
 import dcmdon.resources.validation.model.ValidationResult;
+import dcmdon.resources.validation.recognition.ConfigurationReader;
 
 /**
  * Главный класс приложения. Запускает проверку
@@ -32,12 +32,14 @@ public class Main
 	 */
 	public static void main (String[] a_args)
 	{
+		int errorCodeValue = ValidationResult.Code.ERROR.getValue();
 		try
 		{
 			if (a_args.length == 0)
 			{
-				System.out.println(HELP_MESSAGE);
-				System.exit(ValidationResult.Code.ERROR.getValue());
+				System.out.println();
+				System.out.print(HELP_MESSAGE);
+				System.exit(errorCodeValue);
 			}
 			
 			String configFilePath = a_args[0];
@@ -46,12 +48,12 @@ public class Main
 										  new ConfigurationReader().
 										  read(configFilePath));
 			
-			System.out.print(validator.validateAndGetReport().getText() +
-									   System.lineSeparator());
+			System.out.println();
+			System.out.print(validator.validateAndGetReport().getText());
 			if (validator.getValidationResultCode() ==
-					ValidationResult.Code.ERROR.getValue())
+				ValidationResult.Code.ERROR)
 			{
-				System.exit(ValidationResult.Code.ERROR.getValue());
+				System.exit(errorCodeValue);
 			}
 		}
 		catch (Exception e)
@@ -66,7 +68,7 @@ public class Main
 			{
 				e.printStackTrace();
 			}
-			System.exit(ValidationResult.Code.ERROR.getValue());
+			System.exit(errorCodeValue);
 		}
 	}
 }

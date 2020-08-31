@@ -1,5 +1,6 @@
 package dcmdon.resources.validation.model;
 
+import java.util.List;
 import java.util.Objects;
 
 import dcmdon.resources.validation.ResourceValidator;
@@ -17,18 +18,18 @@ public class Configuration
 	public static final String KEY_ALLOWED_EQUAL_CONSTANTS =
 	"allowedEqualConstants";
 	
-	private String[] xmlFilePaths;
+	private List<String> xmlFilePaths;
 	private Interfaces[] interfaces;
 	
 	/**
 	 * @return пути к xml-файлам. Пути должны быть
 	 * указаны в файле конфигурации
 	 */
-	public String[] getXmlFilePaths ()
+	public List<String> getXmlFilePaths ()
 	{
 		Objects.requireNonNull(xmlFilePaths,
 						 	   "Укажите пути к xml-файлам или директориям" +
-						 	   ResourceValidator.ERROR_MESSAGE_END);
+						 	   ResourceValidator.CONFIG_MESSAGE_END);
 		return xmlFilePaths;
 	}
 	
@@ -40,7 +41,7 @@ public class Configuration
 	{
 		Objects.requireNonNull(interfaces, "Укажите ключ \"Interfaces\" " +
 										   "и его значение" +
-										   ResourceValidator.ERROR_MESSAGE_END);
+										   ResourceValidator.CONFIG_MESSAGE_END);
 		
 		if (interfaces.length < 2)
 		{
@@ -49,7 +50,7 @@ public class Configuration
 					  						   Constant.Type.RESOURCE.toString().toUpperCase() +
 					  						   " и " +
 					  						   Constant.Type.PROPERTY.toString().toUpperCase() +
-					  						   ")" + ResourceValidator.ERROR_MESSAGE_END);
+					  						   ")" + ResourceValidator.CONFIG_MESSAGE_END);
 		}
 		return interfaces;
 	}

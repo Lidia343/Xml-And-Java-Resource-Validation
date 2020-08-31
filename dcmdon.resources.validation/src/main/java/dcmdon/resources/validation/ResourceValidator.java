@@ -15,14 +15,15 @@ import dcmdon.resources.validation.model.Configuration;
 import dcmdon.resources.validation.model.TxtReport;
 import dcmdon.resources.validation.model.ValidationReport;
 import dcmdon.resources.validation.model.ValidationResult;
+import dcmdon.resources.validation.model.ValidationResult.Code;
 import dcmdon.resources.validation.model.ValidationResult.Key;
 import dcmdon.resources.validation.model.file.Constant;
 import dcmdon.resources.validation.model.file.Constant.Type;
-import dcmdon.resources.validation.model.file.IConstantRecognizer;
 import dcmdon.resources.validation.model.file.SourceFile;
 import dcmdon.resources.validation.model.file.java.Interfaces;
-import dcmdon.resources.validation.model.file.java.InterfaceConstantRecognizer;
-import dcmdon.resources.validation.model.file.xml.IdParameterRecognizer;
+import dcmdon.resources.validation.recognition.IConstantRecognizer;
+import dcmdon.resources.validation.recognition.IdParameterRecognizer;
+import dcmdon.resources.validation.recognition.InterfaceConstantRecognizer;
 
 /**
  * Класс для проверки констант интерфейсов
@@ -129,7 +130,8 @@ public class ResourceValidator
 		
 		for (String interfacePath : idByPath.keySet())
 		{
-			ValidationResult interfaceValResult = getFileExistingResult(interfacePath);
+			ValidationResult interfaceValResult =
+			getFileExistingResult(interfacePath);
 			
 			if (interfaceValResult.getResultType() ==
 				ValidationResult.Type.ERROR)
@@ -169,7 +171,8 @@ public class ResourceValidator
 				
 				Short value = Short.valueOf(c.getValue());
 				validConstant = true;
-				for (Entry<String, Constant> entry : interfaceConstByName.entrySet())
+				for (Entry<String, Constant> entry : interfaceConstByName.
+													 entrySet())
 				{
 					String entryConstName = entry.getKey();
 					Constant entryConst = entry.getValue();
@@ -230,7 +233,8 @@ public class ResourceValidator
 			 * Если при проверке интерфейса не было найдено ошибок,
 			 * в отчёт записывается соответствующее сообщение:
 			 */
-			if (!errorsExist) new ValidationResult(interfaceValResult, Key.SUCCESS, m_successMessage);
+			if (!errorsExist) new ValidationResult(interfaceValResult,
+												   Key.SUCCESS, m_successMessage);
 		}
 	}
 	
@@ -239,12 +243,18 @@ public class ResourceValidator
 	 * её типу ("RESOURCE" или "PROPERTY").
 	 * Типу "RESOURCE" соответствует префикс "RES",
 	 * "PROPERTY" - "PROP".
+	 * @param a_parentForErrResult
+	 * 		  Объект класса ValidationResult для
+	 * 		  создания нового объекта класса
+	 * 		  ValidationResult в случае, если
+	 * 		  константа имеет неверный префикс
 	 * @param a_constant
 	 * 		  Константа для проверки
 	 * @return true - если префикс константы
 	 * соответствует её типу, false - иначе.
 	 */
-	private boolean validateConstantPrefix (ValidationResult a_parentForErrResult, Constant a_constant)
+	private boolean validateConstantPrefix (ValidationResult a_parentForErrResult,
+											Constant a_constant)
 	{
 		if (!(a_constant.getName().equals(Constant.ALLOWED_NAME_WITHOUT_PREFIX) ||
 			  validateConstantPrefixForType(a_constant, Type.RESOURCE) ||
@@ -270,7 +280,8 @@ public class ResourceValidator
 	 * @return true - если префикс константы
 	 * соответствует типу a_type, false - иначе.
 	 */
-	private boolean validateConstantPrefixForType (Constant a_constant, Type a_type)
+	private boolean validateConstantPrefixForType (Constant a_constant,
+												   Type a_type)
 	{
 		if (a_constant.getSourceFile().getType() == a_type)
 		{
@@ -283,14 +294,14 @@ public class ResourceValidator
 	}
 	
 	/**
-	 * Возвращает интерфейсы для проверки и печатает в отчёт
-	 * сообщение о проверке интерфейсов.
+	 * Возвращает интерфейсы для проверки.
 	 * @return интерфейсы для проверки
 	 */
 	private Interfaces[] getInterfacesForValidation ()
 	{
-		m_currentValResult = new ValidationResult(m_valResultRoot, Key.INITIAL_INFORMATION,
-						     "Проверка интерфейсов...");
+		m_currentValResult = new ValidationResult(m_valResultRoot,
+							 					  Key.INITIAL_INFORMATION,
+							 					  "Проверка интерфейсов...");
 		return removeEqualInterfacePaths(m_configuration.getInterfaces());
 	}
 	
@@ -320,7 +331,7 @@ public class ResourceValidator
 			properties = a_interfaces[0];
 		}
 		
-		List<String> pathsForRemoving = new ArrayList<>();////////////////////////
+		List<String> pathsForRemoving = new ArrayList<>();
 		Map<String, String> propIdByPath = properties.getIdByPath();
 		for (String resPath : resources.getIdByPath().keySet())
 		{
@@ -365,13 +376,12 @@ public class ResourceValidator
 	}
 		
 	/**
-	 * Печатает в отчёт путь к файлу и, если файл
-	 * не существует, информацию о том, что он не
-	 * был найден.
 	 * @param a_filePath
 	 * 		  Путь к файлу
-	 * @return true - если файл существует, false -
-	 * иначе
+	 * @return если файл существует, возвращает
+	 * результат проверки ValidationResult с
+	 * ключом Key.FILE_PATH, иначе - с ключом
+	 * Key.FILE_NON_EXISTING
 	 */
 	private ValidationResult getFileExistingResult (String a_filePath)
 	{
@@ -395,12 +405,14 @@ public class ResourceValidator
 	}
 	
 	/**
-	 * Если файл не существует, печатает соответствующее
-	 * сообщение в отчёт.
+	 * Если файл не существует, создаёт два объекта
+	 * класса ValidationResult (один - с ключом
+	 * Key.FILE_PATH, другой - с ключом
+	 * Key.FILE_NON_EXISTING).
 	 * @param a_file
 	 * 		  Файл для проверки на существование
 	 */
-	private void writeIntoReportIfFileNotFound (File a_file)
+	private void createFileNonExistingResult (File a_file)
 	{
 		if (!a_file.exists())
 		{
@@ -413,9 +425,11 @@ public class ResourceValidator
 	}
 	
 	/**
-	 * Записывает в отчёт, что значение константы
-	 * a_errorConst равно значению константы
-	 * a_equalConst.
+	 * Создаёт результат проверки ValidationResult с
+	 * ключом Key.EQUAL_INTERFACE_CONSTS.
+	 * @param a_parent
+	 * 		  Объект для добавления к нему нового
+	 * 		  результата проверки
 	 * @param a_errorConst
 	 * 		  Неправильная константа, значение
 	 * 		  которой совпадает со значением
@@ -475,15 +489,12 @@ public class ResourceValidator
 			List<Constant> propertyAttrs = tagRecognizer.
 										   getConstants(propertyFile);
 			
-			/*
-			 * Если все параметры правильные, записывает в отчёт
-			 * сообщение об отсутствии ошибок:
-			 */
 			if (!(!checkXmlParameters(xmlFileRes, resourceAttrs,
 									  m_allResourceInterfaceConstantValues) ||
 				  !checkXmlParameters(xmlFileRes, propertyAttrs,
 									  m_allPropertyInterfaceConstantValues)))
 			{
+				//Если все параметры правильные:
 				new ValidationResult(xmlFileRes, Key.SUCCESS, m_successMessage);
 			}
 		}
@@ -574,7 +585,7 @@ public class ResourceValidator
 		{
 			File file = new File(path);
 			
-			writeIntoReportIfFileNotFound(file);
+			createFileNonExistingResult(file);
 			
 			if (file.isFile())
 			{
@@ -688,13 +699,18 @@ public class ResourceValidator
 	}
 	
 	/**
-	 * Проверяет список констант a_xmlParameters,
+	 * Проверяет список констант a_xmlAttributes,
 	 * являющихся атрибутами тега Resource или
 	 * Property xml-файла, на наличие их значений
 	 * в списке a_interfaceConstantValues. Если
 	 * значение хотя бы одной константы отсутствует
-	 * в списке, в отчёт записывается соответствующее
-	 * сообщение.
+	 * в списке, создаётся объект класса
+	 * ValidationResult с ключом
+	 * Key.INVALID_XML_ATTRIBUTE_PARAMETER.
+	 * @param a_parentForErrResult
+	 * 		  Объект для добавления к нему нового
+	 * 		  результата проверки в случае, когда
+	 * 		  метод возвращает false
 	 * @param a_xmlAttributes
 	 * 		  Константы для проверки
 	 * @param a_interfaceConstantValues
@@ -705,7 +721,8 @@ public class ResourceValidator
 	 * списка a_xmlAttributes содержатся в списке
 	 * a_interfaceConstantValues, false - иначе
 	 */
-	private boolean checkXmlParameters (ValidationResult a_parentForErrResult, List<Constant> a_xmlAttributes,
+	private boolean checkXmlParameters (ValidationResult a_parentForErrResult,
+										List<Constant> a_xmlAttributes,
 									    List<Short> a_interfaceConstantValues)
 	{
 		boolean result = true;
@@ -732,10 +749,8 @@ public class ResourceValidator
 	 * Resource и Property и параметры
 	 * атрибутов id тегов Resource и Property
 	 * xml-файлов. Результат проверки возвращается
-	 * в виде строки-отчёта.
-	 * Файлы для проверки, а также списки констант,
-	 * значения которых могут повторяться в рамках
-	 * одного типа интерфейсов, указываются в файле
+	 * в виде отчёта ValidationReport.
+	 * Файлы для проверки указываются в файле
 	 * конфигурации.
 	 * @return отчёт о результате проверки
 	 * @throws Exception
@@ -748,18 +763,10 @@ public class ResourceValidator
 	}
 	
 	/**
-	 * @return код результата проверки. Если
-	 * в процессе проверки не было обнаружено
-	 * ошибок, возвращает
-	 * ResourceValidator.OK_RESULT_CODE, иначе -
-	 * ResourceValidator.ERROR_RESULT_CODE
+	 * @return код результата проверки
 	 */
-	public int getValidationResultCode ()
+	public Code getValidationResultCode ()
 	{
-		if (m_report == null)
-		{
-			return -1;
-		}
 		return m_report.getValidationResultCode();
 	}
 }

@@ -22,7 +22,7 @@ public class Interfaces
 	public Type getType ()
 	{
 		Objects.requireNonNull(type, "Укажите тип интерфейсов" + 
-			     			    	 ResourceValidator.ERROR_MESSAGE_END);
+			     			    	 ResourceValidator.CONFIG_MESSAGE_END);
 		return type;
 	}
 	
@@ -33,7 +33,7 @@ public class Interfaces
 							   " констант, значения которых могут повторяться, " +
 							   "в теле объекта типа " + getType() + " в массиве " +
 							   Configuration.KEY_INTERFACES +
-							   ResourceValidator.ERROR_MESSAGE_END);
+							   ResourceValidator.CONFIG_MESSAGE_END);
 		
 		Map<Short, List<String>> constMap = new HashMap<>();
 		for (AllowedEqualConstants c : allowedEqualConstants)
@@ -41,7 +41,7 @@ public class Interfaces
 			String errorMessagePart = " констант, значения которых " +
 									  "могут повторяться, для интерфейсов " +
 									  "типа " + getType() +
-									  ResourceValidator.ERROR_MESSAGE_END;
+									  ResourceValidator.CONFIG_MESSAGE_END;
 			
 			List<String> names = c.getNames();
 			Objects.requireNonNull(names, "Укажите имена" + errorMessagePart);
@@ -77,7 +77,7 @@ public class Interfaces
 	{
 		Objects.requireNonNull(files, "Укажите пути и id интерфейсов типа " +
 				   					  getType() +
-				   					  ResourceValidator.ERROR_MESSAGE_END);
+				   					  ResourceValidator.CONFIG_MESSAGE_END);
 		
 		if (files.size() == 0)
 		{

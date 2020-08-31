@@ -1,26 +1,35 @@
 package dcmdon.resources.validation.model;
 
-import java.util.List;
-
 import dcmdon.resources.validation.model.ValidationResult.Key;
 
+/**
+ * Текстовый отчёт о результатах проверки ресурсов.
+ */
 public class TxtReport extends ValidationReport
 {
 	StringBuilder m_report = new StringBuilder();
 	
-	public TxtReport(ValidationResult a_root)
+	/**
+	 * Конструктор класса TxtReport.
+	 * @param a_root
+	 * 		  Результат проверки, являющийся
+	 * 		  корнем дерева, содержащего все
+	 * 		  результаты проверки ValidationResult
+	 */
+	public TxtReport (ValidationResult a_root)
 	{
 		super(a_root);
+		writeAllEntries(m_root);
 	}
 
 	@Override
-	public String getText()
+	public String getText ()
 	{
-		writeAllEntries(m_root);
 		return m_report.toString();
 	}
 	
-	private void writeValidationResult (ValidationResult a_result)
+	@Override
+	protected void writeValidationResult (ValidationResult a_result)
 	{
 		ValidationResult parent = a_result.getParent();
 		
@@ -29,17 +38,8 @@ public class TxtReport extends ValidationReport
 		{
 			m_report.append(System.lineSeparator());
 		}
-		m_report.append(a_result.getPrefix() + a_result.getValue() + a_result.getPostfix());
+		m_report.append(a_result.getPrefix() + a_result.getValue() +
+						a_result.getPostfix());
 		m_report.append(System.lineSeparator());
-	}
-	
-	private void writeAllEntries (ValidationResult a_parent)
-	{
-		writeValidationResult(a_parent);
-		List<ValidationResult> parentEntries = a_parent.getEntries();
-		for (ValidationResult result : parentEntries)
-		{
-			writeAllEntries(result);
-		}
 	}
 }

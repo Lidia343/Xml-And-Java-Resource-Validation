@@ -1,7 +1,6 @@
 {
 	"xmlFilePaths":
 	[
-		"nonExistXmlFile.xml",
 		"src/test/resources/invalid/xml_file1.xml",
 		"src/test/resources/valid/xml_file2.xml"
 	],
@@ -22,8 +21,7 @@
 			],
 			"files":
 			[
-				["src/test/resources/valid/resource_interface1.java", "core"],
-				["nonExistInterface.java", "railway"]
+				["src/test/resources/valid/resource_interface1.java", "core"]
 			]
 		},
 		{

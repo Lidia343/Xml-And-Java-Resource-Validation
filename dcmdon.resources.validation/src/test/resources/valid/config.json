@@ -4,6 +4,8 @@
 		"src/test/resources/valid",
 		"src/test/resources/valid/xml_file1.xml",
 		"src/test/resources/valid/xml_file2.xml",
+		"src/test/resources/valid/xml_file1.xml",
+		"src/test/resources/valid/xml_file2.xml",
 		"src/test/resources/valid/entry_folder/",
 		"src/test/resources/valid/entry_folder/",
 		"src/test/resources/valid"

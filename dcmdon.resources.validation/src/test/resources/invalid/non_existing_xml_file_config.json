@@ -1,7 +1,7 @@
 {
 	"xmlFilePaths":
 	[
-		"src/test/resources/invalid/xml_file2.xml"
+		"nonExistingXmlFile.xml"
 	],
 	"interfaces":
 	[

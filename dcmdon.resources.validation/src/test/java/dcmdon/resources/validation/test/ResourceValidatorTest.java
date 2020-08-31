@@ -1,6 +1,7 @@
 package dcmdon.resources.validation.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
@@ -9,12 +10,14 @@ import java.util.List;
 import org.junit.Test;
 
 import dcmdon.resources.validation.ResourceValidator;
-import dcmdon.resources.validation.model.ConfigurationReader;
+import dcmdon.resources.validation.model.ValidationReport;
 import dcmdon.resources.validation.model.ValidationResult;
+import dcmdon.resources.validation.model.ValidationResult.Code;
+import dcmdon.resources.validation.model.ValidationResult.Key;
+import dcmdon.resources.validation.recognition.ConfigurationReader;
 
 /**
- * Класс для общего теста программы
- * (теста методов класса ResourceValidator).
+ * Класс для общего теста программы.
  */
 public class ResourceValidatorTest
 {
@@ -82,55 +85,151 @@ public class ResourceValidatorTest
 			 										"/invalid/empty_xml_" +
 			 										"file_list_config.json";
 	
-	private final String m_invalidXmlParConfig = "src/test/resources/invalid/" +
-			  										   "invalid_xml_par_config.json";
+	private final String m_nonExistingInterfaceFileConfig = "src/test/resources/invalid/" +
+															"non_existing_interface_file_config.json";
 	
-	private final String m_nonExistInterfaceFile = "nonExistInterface.java";
-	private final String m_nonExistXmlFile = "nonExistXmlFile.xml";
+	private final String m_nonExistingXmlFileConfig = "src/test/resources/invalid/" +
+													  "non_existing_xml_file_config.json";
 	
-	private final int m_invalXmlParLineNumber = 5;
 	
 	/**
 	 * Проверяет заведомо корректные ресурсы.
-	 * Вызывает метод "validateAndGetReport"
-	 * класса ResourceValidator и проверяет
-	 * код, получаемый с помощью метода 
-	 * "getValidationResultCode()", на равенство
-	 * коду ResourceValidator.OK_RESULT_CODE.
 	 * @throws Exception
 	 */
 	@Test
 	public void testValidResources()
 	{
-		test(m_validConfig, ValidationResult.Code.OK.getValue(), (String[])null);
+		testReport(m_validConfig, ValidationResult.Code.OK, (Key[])null);
 	}
 	
 	/**
-	 * Вызывает метод "validateAndGetReport"
-	 * класса ResourceValidator и проверяет
-	 * код, получаемый с помощью метода 
-	 * "getValidationResultCode()", на равенство
-	 * коду a_code.
-	 * @param a_code
-	 * 		  Код для сравнения
-	 * @param a_filePath
-	 * 		  Путь к файлу конфигурации
+	 * Проверяет заведомо некорректные ресурсы.
 	 * @throws Exception
 	 */
-	private void testInvalidResources (String a_configFilePath,
-									   String... a_messagesForEqual)
+	@Test
+	public void testInvalidResources()
 	{
-		test(a_configFilePath, ValidationResult.Code.ERROR.getValue(),
-			 a_messagesForEqual);
+		testExceptionMessage(m_xmlPathsKeyNonExistConfig,
+							 "Укажите пути к xml");
+		
+		testExceptionMessage(m_interfacesKeyNonExistConfig,
+							 "Укажите ключ \"Interfaces\"");
+		
+		testExceptionMessage(m_typeKeyNonExistConfig,
+							 "Укажите тип интерфейсов");
+		
+		testExceptionMessage(m_allowedEqualConstKeyNonExistConfig,
+							 "Укажите элементы массива");
+		
+		testExceptionMessage(m_allowedEqualConstNamesKeyNonExistConfig,
+							 "Укажите имена констант");
+		
+		testExceptionMessage(m_allowedEqualConstValueKeyNonExistConfig,
+							 "Укажите значение констант");
+		
+		testExceptionMessage(m_filesKeyNonExistConfig,
+							 "Укажите пути и id интерфейсов");
+		
+		testExceptionMessage(m_emptyInterfaceListConfig,
+							 "Укажите информацию об интерфейсах");
+		
+		testExceptionMessage(m_emptyAllowedEqualConstNamesListConfig,
+							 "Массив констант не должен быть пустым");
+		
+		testExceptionMessage(m_emptyFilesListConfig,
+							 "Отображение путей и id интерфейсов");
+		
+		testExceptionMessage(m_nonUniqueInterfacePathsConfig,
+							 "оригинальные пути к интерфейсам");
+		
+		testExceptionMessage(m_invalidAllowedEqualConstValueConfig,
+							 "Значение константы должно");
+
+		testExceptionMessage(m_invalidInterfaceConstValueConfig,
+				 			 "ожидалось значение константы");
+
+		testReport(m_emptyXmlFileListConfig, ValidationResult.Code.OK,
+				   Key.NEED_FOR_XML_FILES);
+		
+		testErrorReport(m_nonExistingInterfaceFileConfig, Key.FILE_NON_EXISTING);
+		
+		testErrorReport(m_nonExistingXmlFileConfig, Key.FILE_NON_EXISTING);
+		
+		testErrorReport(m_baseInvalidConfig, Key.SOME_EQUAL_INTERFACE_PATHS,
+						Key.NEED_FOR_INTERFACE_PATH, Key.INVALID_CONST_PREFIX,
+						Key.EQUAL_INTERFACE_CONSTS, Key.INVALID_XML_ATTRIBUTE_PARAMETER);
 	}
 	
-	private void test (String a_configFilePath, int a_codeForEqual,
-					   String... a_messagesForEqual)
+	/**
+	 * Проверяет появление искючения с сообщением,
+	 * содержащим строку a_exceptionMesssage, при
+	 * проверке ресурсов, указанных в файле
+	 * a_configFilePath.
+	 * @param a_configFilePath
+	 * 	 	  Файл конфигурации
+	 * @param a_exceptionMesssage
+	 * 		  Строка, которая должна содержаться в 
+	 * 		  сообщении исключения
+	 */
+	private void testExceptionMessage (String a_configFilePath, String a_exceptionMesssage)
 	{
-		List<String> messages = null;
-		if (a_messagesForEqual != null)
+		try
 		{
-			messages = Arrays.asList(a_messagesForEqual);
+			ResourceValidator validator = new ResourceValidator(
+					  					  new ConfigurationReader().
+					  					  read(a_configFilePath));
+			validator.validateAndGetReport();
+			fail();
+		}
+		catch (Exception e)
+		{
+			if (a_exceptionMesssage == null) fail();
+			if (!e.getMessage().contains(a_exceptionMesssage))
+			{
+				fail();
+			}
+		}
+	}
+	
+	
+	/**
+	 * Проверяет наличие ключей a_keysForSearch в
+	 * узлах дерева результатов проверки всех
+	 * ресурсов, указанных в файле a_configFilePath,
+	 * а также общий код реультатов проверки на
+	 * соответствие коду Code.ERROR.
+	 * @param a_configFilePath
+	 * 		  Файл конфигурации
+	 * @param a_keysForSearch
+	 * 		  Ключи для поиска
+	 */
+	private void testErrorReport (String a_configFilePath,
+								  Key... a_keysForSearch)
+	{
+		testReport(a_configFilePath, ValidationResult.Code.ERROR,
+				   a_keysForSearch);
+	}
+	
+	/**
+	 * Проверяет наличие ключей a_keysForSearch в
+	 * узлах дерева результатов проверки всех
+	 * ресурсов, указанных в файле a_configFilePath,
+	 * а также общий код реультатов проверки на
+	 * соответствие коду a_codeForEqual.
+	 * @param a_configFilePath
+	 * 		  Файл конфигурации
+	 * @param a_codeForEqual
+	 * 		  Код для сравнения
+	 * @param a_keysForSearch
+	 * 		  Ключи для поиска
+	 */
+	private void testReport (String a_configFilePath, Code a_codeForEqual,
+							 Key... a_keysForSearch)
+	{
+		List<Key> keys = null;
+		if (a_keysForSearch != null)
+		{
+			keys = Arrays.asList(a_keysForSearch);
 		}
 		try
 		{
@@ -138,14 +237,16 @@ public class ResourceValidatorTest
 					  					  new ConfigurationReader().
 					  					  read(a_configFilePath));
 			
-			String report = validator.validateAndGetReport().getText();
-			assertEquals(validator.getValidationResultCode(), a_codeForEqual);
+			ValidationReport report = validator.validateAndGetReport();
 			
-			if (messages == null) return;
+			assertNotEquals(report.getText(), null);
+			assertEquals(report.getValidationResultCode(), a_codeForEqual);
 			
-			for (String message : messages)
+			if (keys == null) return;
+			
+			for (Key key : keys)
 			{
-				if (!report.contains(message))
+				if (!report.containsKey(key))
 				{
 					fail();
 				}
@@ -153,83 +254,7 @@ public class ResourceValidatorTest
 		}
 		catch (Exception e)
 		{
-			boolean fail = true;
-			for (String message : messages)
-			{
-				if (e.getMessage().contains(message))
-				{
-					fail = false;
-				}
-			}
-			if (fail) fail();
+			fail();
 		}
-	}
-	
-	/**
-	 * Проверяет заведомо некорректные ресурсы.
-	 * Вызывает метод "validateAndGetReport"
-	 * класса ResourceValidator и проверяет
-	 * код, получаемый с помощью метода 
-	 * "getValidationResultCode()", на равенство
-	 * коду ResourceValidator.ERROR_RESULT_CODE.
-	 * @throws Exception
-	 */
-	@Test
-	public void testInvalidResources()
-	{
-		testInvalidResources(m_xmlPathsKeyNonExistConfig,
-							 "Укажите пути к xml");
-		
-		testInvalidResources(m_interfacesKeyNonExistConfig,
-							 "Укажите ключ \"Interfaces\"");
-		
-		testInvalidResources(m_typeKeyNonExistConfig,
-							 "Укажите тип интерфейсов");
-		
-		testInvalidResources(m_allowedEqualConstKeyNonExistConfig,
-							 "Укажите элементы массива");
-		
-		testInvalidResources(m_allowedEqualConstNamesKeyNonExistConfig,
-							 "Укажите имена констант");
-		
-		testInvalidResources(m_allowedEqualConstValueKeyNonExistConfig,
-							 "Укажите значение констант");
-		
-		testInvalidResources(m_filesKeyNonExistConfig,
-							 "Укажите пути и id интерфейсов");
-		
-		testInvalidResources(m_emptyInterfaceListConfig,
-							 "Укажите информацию об интерфейсах");
-		
-		testInvalidResources(m_emptyAllowedEqualConstNamesListConfig,
-							 "Массив констант не должен быть пустым");
-		
-		testInvalidResources(m_emptyFilesListConfig,
-							 "Отображение путей и id интерфейсов");
-		
-		testInvalidResources(m_nonUniqueInterfacePathsConfig,
-							 "оригинальные пути к интерфейсам");
-		
-		test(m_emptyXmlFileListConfig, ValidationResult.Code.OK.getValue(),
-			 "Не указаны файлы для проверки");
-		
-		String fileNonExisting = ":" + System.lineSeparator() +
-								ValidationResult.Code.ERROR.getValue() + "Файл не найден";
-		
-		testInvalidResources(m_baseInvalidConfig, m_nonExistXmlFile +
-							 fileNonExisting, m_nonExistInterfaceFile +
-							 fileNonExisting, "обнаружены пути, совпадающие",
-						     "Укажите путь к файлу интерфейса",
-						     "имеет неверный префикс", "равна константе",
-						     "Строка: " + m_invalXmlParLineNumber);
-		
-		testInvalidResources(m_invalidXmlParConfig,
-				 			 "Строка:");
-		
-		testInvalidResources(m_invalidAllowedEqualConstValueConfig,
-							 "Значение константы должно");
-		
-		testInvalidResources(m_invalidInterfaceConstValueConfig,
-							 "ожидалось значение константы");
 	}
 }

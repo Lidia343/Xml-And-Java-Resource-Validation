@@ -61,7 +61,6 @@ public class CommentFilter
 					}
 					case 1:
 					{
-						//Пустой однострочный комментарий:
 						if (i == (line.length() - 1)) 
 						{
 							state = 0;

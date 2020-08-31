@@ -1,4 +1,4 @@
-package dcmdon.resources.validation.model.file.xml;
+package dcmdon.resources.validation.handle;
 
 import java.util.Stack;
 

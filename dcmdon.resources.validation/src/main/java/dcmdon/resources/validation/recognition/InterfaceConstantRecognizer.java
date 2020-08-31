@@ -1,4 +1,4 @@
-package dcmdon.resources.validation.model.file.java;
+package dcmdon.resources.validation.recognition;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,8 +8,8 @@ import java.util.Objects;
 import java.util.Scanner;
 
 import dcmdon.resources.validation.model.file.Constant;
-import dcmdon.resources.validation.model.file.IConstantRecognizer;
 import dcmdon.resources.validation.model.file.SourceFile;
+import dcmdon.resources.validation.model.file.java.CommentFilter;
 import dcmdon.resources.validation.util.Util;
 
 /**
@@ -26,7 +26,8 @@ public class InterfaceConstantRecognizer implements IConstantRecognizer
 		
 		String interfacePath = a_sourceFile.getPath();
 		
-		String interfaceCode = new CommentFilter().getFilteredText(Util.getText(interfacePath));
+		String interfaceCode = new CommentFilter().getFilteredText(Util.getText(
+												   interfacePath));
 			
 		try (Scanner scanner = new Scanner (interfaceCode))
 		{

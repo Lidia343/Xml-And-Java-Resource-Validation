@@ -1,4 +1,4 @@
-package dcmdon.resources.validation.model;
+package dcmdon.resources.validation.recognition;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -7,6 +7,8 @@ import java.util.Objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import dcmdon.resources.validation.model.Configuration;
 
 /**
  * Класс для чтения конфигурации.

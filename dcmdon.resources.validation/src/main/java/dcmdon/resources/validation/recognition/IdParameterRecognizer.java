@@ -1,4 +1,4 @@
-package dcmdon.resources.validation.model.file.xml;
+package dcmdon.resources.validation.recognition;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,8 +16,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import dcmdon.resources.validation.handle.XMLHandler;
 import dcmdon.resources.validation.model.file.Constant;
-import dcmdon.resources.validation.model.file.IConstantRecognizer;
 import dcmdon.resources.validation.model.file.SourceFile;
 
 /**
@@ -42,7 +42,7 @@ public class IdParameterRecognizer implements IConstantRecognizer
 	}
 	
 	/**
-	 * Возвращает список атрибутов Id из файла a_sourceFile.
+	 * @return список атрибутов Id из файла a_sourceFile.
 	 */
 	@Override
 	public List<Constant> getConstants(SourceFile a_sourceFile)

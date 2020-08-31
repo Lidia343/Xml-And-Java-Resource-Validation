@@ -1,6 +1,9 @@
-package dcmdon.resources.validation.model.file;
+package dcmdon.resources.validation.recognition;
 
 import java.util.List;
+
+import dcmdon.resources.validation.model.file.Constant;
+import dcmdon.resources.validation.model.file.SourceFile;
 
 /**
  * Интерфейс распознавателя констант.

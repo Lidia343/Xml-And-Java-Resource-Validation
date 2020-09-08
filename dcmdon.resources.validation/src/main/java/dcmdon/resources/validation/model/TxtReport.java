@@ -20,6 +20,7 @@ public class TxtReport extends ValidationReport
 	{
 		super(a_root);
 		writeAllEntries(m_root);
+		writeErrorCount();
 	}
 
 	@Override
@@ -41,5 +42,13 @@ public class TxtReport extends ValidationReport
 		m_report.append(a_result.getPrefix() + a_result.getValue() +
 						a_result.getPostfix());
 		m_report.append(System.lineSeparator());
+	}
+	
+	private void writeErrorCount ()
+	{
+		m_report.append(System.lineSeparator() +
+						"Количество найденных ошибок: " +
+				 		getErrorCount() + "." +
+				 		System.lineSeparator());
 	}
 }

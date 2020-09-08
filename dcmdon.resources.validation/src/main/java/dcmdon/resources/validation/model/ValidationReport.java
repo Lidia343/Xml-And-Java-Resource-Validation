@@ -87,6 +87,14 @@ public abstract class ValidationReport
 	}
 	
 	/**
+	 * @return количество ошибок, найденных в ресурсах
+	 */
+	public int getErrorCount ()
+	{
+		return m_root.getErrorCount();
+	}
+	
+	/**
 	 * Записывает все данные вложений объекта a_parent
 	 * и данные самого объекта a_parent в отчёт.
 	 * @param a_parent

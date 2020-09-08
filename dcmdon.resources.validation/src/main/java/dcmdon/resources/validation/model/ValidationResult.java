@@ -86,6 +86,8 @@ public class ValidationResult
 	
 	private List<ValidationResult> m_entries = new ArrayList<>();
 	
+	private int m_errorCount = 0;
+	
 	/**
 	 * Конструктор класса ValidationResult.
 	 * @param a_parent
@@ -107,6 +109,10 @@ public class ValidationResult
 		{
 			m_parent.addNode(this);
 			m_root = m_parent.getRoot();
+		}
+		if (m_key.getKeyType() == Type.ERROR)
+		{
+			incErrorCount();
 		}
 	}
 	
@@ -334,5 +340,33 @@ public class ValidationResult
 	private void addNode (ValidationResult a_entry)
 	{
 		m_entries.add(a_entry);
+	}
+	
+	/**
+	 * Увеличивает значение счётчика ошибок
+	 * на один.
+	 */
+	private void incErrorCount ()
+	{
+		if (m_root == null || m_root == this)
+		{
+			m_errorCount++;
+		}
+		else
+		{
+			m_root.incErrorCount();
+		}
+	}
+	
+	/**
+	 * @return значение счётчика ошибок
+	 */
+	public int getErrorCount ()
+	{
+		if (m_root == null || m_root == this)
+		{
+			return m_errorCount;
+		}
+		return m_root.getErrorCount();
 	}
 }

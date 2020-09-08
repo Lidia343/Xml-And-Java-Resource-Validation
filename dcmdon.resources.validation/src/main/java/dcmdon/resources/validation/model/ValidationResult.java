@@ -80,6 +80,8 @@ public class ValidationResult
 	
 	private Code m_code;
 	
+	private Code m_generalCode = Code.OK;
+	
 	private String m_prefix;
 	
 	private String m_postFix;
@@ -110,9 +112,9 @@ public class ValidationResult
 			m_parent.addNode(this);
 			m_root = m_parent.getRoot();
 		}
-		if (m_key.getKeyType() == Type.ERROR)
+		if (m_key.getKeyType().getCode() == Code.ERROR)
 		{
-			incErrorCount();
+			incErrorCountAndSetErrorCode();
 		}
 	}
 	
@@ -201,41 +203,7 @@ public class ValidationResult
 	 */
 	public Code getGenaralCode ()
 	{
-		if (m_root != null)
-		{
-			return getGeneralCode(m_root);
-		}
-		if (m_parent != null)
-		{
-			return getGeneralCode(m_parent);
-		}
-		return getGeneralCode(this);
-	}
-	
-	/**
-	 * @return общий код результата проверки
-	 * для дерева, корнем которого является
-	 * a_result.
-	 * Если хотя бы один узел дерева имеет
-	 * код Code.ERROR, возвращает Code.ERROR,
-	 * иначе - Code.OK
-	 */
-	private Code getGeneralCode (ValidationResult a_result)
-	{
-		if (a_result.getCode() == Code.ERROR)
-		{
-			return Code.ERROR;
-		}
-		
-		List<ValidationResult> entries = a_result.getNodes();
-		for (ValidationResult entry : entries)
-		{
-			if (getGeneralCode(entry) == Code.ERROR)
-			{
-				return Code.ERROR;
-			}
-		}
-		return Code.OK;
+		return m_generalCode;
 	}
 	
 	/**
@@ -344,17 +312,22 @@ public class ValidationResult
 	
 	/**
 	 * Увеличивает значение счётчика ошибок
-	 * на один.
+	 * на один и изменяет общий код результата
+	 * проверки на Code.ERROR.
 	 */
-	private void incErrorCount ()
+	private void incErrorCountAndSetErrorCode ()
 	{
 		if (m_root == null || m_root == this)
 		{
 			m_errorCount++;
+			if (m_generalCode != Code.ERROR)
+			{
+				m_generalCode = Code.ERROR;
+			}
 		}
 		else
 		{
-			m_root.incErrorCount();
+			m_root.incErrorCountAndSetErrorCode();
 		}
 	}
 	

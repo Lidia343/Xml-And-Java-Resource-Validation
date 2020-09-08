@@ -54,7 +54,8 @@ public class IdParameterRecognizer implements IConstantRecognizer
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 	    SAXParser parser = factory.newSAXParser();
 		XMLHandler handler = new XMLHandler(document);
-	    parser.parse(new File(a_sourceFile.getPath()), handler);
+		String path = a_sourceFile.getPath();
+	    parser.parse(new File(path), handler);
 	     
 	    //Список тегов a_sourceFile.getType():
 		NodeList tags = document.getDocumentElement().
@@ -80,7 +81,9 @@ public class IdParameterRecognizer implements IConstantRecognizer
 			}
 			catch (NumberFormatException e)
 			{
-				throw new NumberFormatException("Строка: " + lineNumber +
+				throw new NumberFormatException("Обнаружена ошибка в " +
+											    "xml-файле " + path +
+												". Строка: " + lineNumber +
 												". Значение атрибута " +
 												name + " должно " +
 												"соответствовать типу " +

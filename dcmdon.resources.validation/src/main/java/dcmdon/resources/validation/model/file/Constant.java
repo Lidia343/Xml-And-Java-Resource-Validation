@@ -9,34 +9,31 @@ public class Constant
 {
 	public enum Type
 	{
-		RESOURCE
-		{
-			@Override
-			public String toString ()
-			{
-				return "Resource";
-			}
-		},
+		RESOURCE("Resource", "RES"), PROPERTY("Property", "PROP");
 		
-		PROPERTY
+		private String m_name;
+		private String m_prefix;
+		
+		private Type (String a_name, String a_prefix)
 		{
-			@Override
-			public String toString ()
-			{
-				return "Property";
-			}
-		};
+			m_name = a_name;
+			m_prefix = a_prefix;
+		}
+		
+		@Override
+		public String toString ()
+		{
+			return m_name;
+		}
+		
+		public String getName ()
+		{
+			return m_name;
+		}
 		
 		public String getPrefix ()
 		{
-			switch (this)
-			{
-				case RESOURCE : return "RES";
-				
-				case PROPERTY : return "PROP";
-				
-				default : return null;
-			}
+			return m_prefix;
 		}
 	}
 

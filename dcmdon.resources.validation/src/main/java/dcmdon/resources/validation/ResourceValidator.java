@@ -738,7 +738,7 @@ public class ResourceValidator
 									 ". Тег: " + par.getSourceFile().getType() +
 									 ". " + par.getName() + " = " + value +
 									 ". Параметр не найден в значениях " +
-									 "констант соответствующих интерфейсов.");
+									 "констант соответствующих интерфейсов");
 			}
 		}
 		return result;

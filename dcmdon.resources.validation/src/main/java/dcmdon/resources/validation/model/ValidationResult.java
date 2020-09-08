@@ -84,7 +84,7 @@ public class ValidationResult
 	
 	private String m_postFix;
 	
-	private List<ValidationResult> m_entries = new ArrayList<>();
+	private List<ValidationResult> m_nodes = new ArrayList<>();
 	
 	private int m_errorCount = 0;
 	
@@ -243,7 +243,7 @@ public class ValidationResult
 	 */
 	public List<ValidationResult> getNodes ()
 	{
-		return m_entries;
+		return m_nodes;
 	}
 	
 	/**
@@ -339,7 +339,7 @@ public class ValidationResult
 	 */
 	private void addNode (ValidationResult a_entry)
 	{
-		m_entries.add(a_entry);
+		m_nodes.add(a_entry);
 	}
 	
 	/**

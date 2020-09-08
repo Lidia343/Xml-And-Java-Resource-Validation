@@ -19,7 +19,7 @@ public class TxtReport extends ValidationReport
 	public TxtReport (ValidationResult a_root)
 	{
 		super(a_root);
-		writeAllEntries(m_root);
+		writeAllNodes(m_root);
 		writeErrorCount();
 	}
 
@@ -40,8 +40,7 @@ public class TxtReport extends ValidationReport
 			m_report.append(System.lineSeparator());
 		}
 		m_report.append(a_result.getPrefix() + a_result.getValue() +
-						a_result.getPostfix());
-		m_report.append(System.lineSeparator());
+						a_result.getPostfix() + System.lineSeparator());
 	}
 	
 	private void writeErrorCount ()

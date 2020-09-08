@@ -102,13 +102,13 @@ public abstract class ValidationReport
 	 * 		  записи в отчёт данных входящих в дерево
 	 * 		  узлов
 	 */
-	protected void writeAllEntries (ValidationResult a_parent)
+	protected void writeAllNodes (ValidationResult a_parent)
 	{
 		writeValidationResult(a_parent);
-		List<ValidationResult> parentEntries = a_parent.getNodes();
-		for (ValidationResult result : parentEntries)
+		List<ValidationResult> parentNodes = a_parent.getNodes();
+		for (ValidationResult node : parentNodes)
 		{
-			writeAllEntries(result);
+			writeAllNodes(node);
 		}
 	}
 }

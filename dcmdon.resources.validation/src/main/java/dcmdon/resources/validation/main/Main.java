@@ -2,6 +2,7 @@ package dcmdon.resources.validation.main;
 
 import dcmdon.resources.validation.ResourceValidator;
 import dcmdon.resources.validation.io.ConfigurationReader;
+import dcmdon.resources.validation.io.ConsoleReportWriter;
 import dcmdon.resources.validation.model.ValidationResult;
 
 /**
@@ -48,8 +49,7 @@ public class Main
 										  new ConfigurationReader().
 										  read(configFilePath));
 			
-			System.out.println();
-			System.out.print(validator.validateAndGetReport().getText());
+			new ConsoleReportWriter().write(validator.validateAndGetReport().getText());
 			if (validator.getValidationResultCode() ==
 				ValidationResult.Code.ERROR)
 			{

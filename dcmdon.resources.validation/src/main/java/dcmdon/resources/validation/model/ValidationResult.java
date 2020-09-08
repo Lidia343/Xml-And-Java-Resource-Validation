@@ -112,7 +112,7 @@ public class ValidationResult
 			m_parent.addNode(this);
 			m_root = m_parent.getRoot();
 		}
-		if (m_key.getKeyType().getCode() == Code.ERROR)
+		if (m_code == Code.ERROR)
 		{
 			incErrorCountAndSetErrorCode();
 		}

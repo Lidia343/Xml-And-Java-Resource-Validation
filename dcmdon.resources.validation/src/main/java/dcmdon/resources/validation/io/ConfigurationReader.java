@@ -1,4 +1,4 @@
-package dcmdon.resources.validation.recognition;
+package dcmdon.resources.validation.io;
 
 import java.io.FileReader;
 import java.io.IOException;

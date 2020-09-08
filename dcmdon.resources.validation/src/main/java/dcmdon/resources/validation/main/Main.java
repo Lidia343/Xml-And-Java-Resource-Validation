@@ -1,8 +1,8 @@
 package dcmdon.resources.validation.main;
 
 import dcmdon.resources.validation.ResourceValidator;
+import dcmdon.resources.validation.io.ConfigurationReader;
 import dcmdon.resources.validation.model.ValidationResult;
-import dcmdon.resources.validation.recognition.ConfigurationReader;
 
 /**
  * Главный класс приложения. Запускает проверку

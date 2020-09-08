@@ -10,11 +10,11 @@ import java.util.List;
 import org.junit.Test;
 
 import dcmdon.resources.validation.ResourceValidator;
+import dcmdon.resources.validation.io.ConfigurationReader;
 import dcmdon.resources.validation.model.ValidationReport;
 import dcmdon.resources.validation.model.ValidationResult;
 import dcmdon.resources.validation.model.ValidationResult.Code;
 import dcmdon.resources.validation.model.ValidationResult.Key;
-import dcmdon.resources.validation.recognition.ConfigurationReader;
 
 /**
  * Класс для общего теста программы.
